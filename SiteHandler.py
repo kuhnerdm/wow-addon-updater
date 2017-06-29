@@ -70,12 +70,22 @@ class Curse:
 
 
 # Tukui
+
 class Tukui:
     def __init__(self, addonpage):
         self.addonpage = addonpage
 
     def findLoc(self):
-        return ''
+        try:
+            page = requests.get(self.addonpage.replace('view', 'download'))
+            contentString = str(page.content)
+            indexOfZiploc = contentString.find('<a href="http://www.tukui.org/addons/downloads/') + 9  # first char of the url
+            endQuote = contentString.find('">', indexOfZiploc)  # ending quote after the url
+            print(contentString[indexOfZiploc:endQuote])
+            return ''
+        except Exception:
+            print('Failed to find downloadable zip file for addon. Skipping...\n')
+            return ''
 
     def getVersion(self):
         return ''

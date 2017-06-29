@@ -73,8 +73,16 @@ def tukui(addonpage):
 
 
 def getTukuiVersion(addonpage):
-    # print('Tukui is not supported yet.')
-    return ''
+    try:
+        page = requests.get(addonpage)
+        contentString = str(page.content)
+        indexOfVer = contentString.find('<a class="commit_short_id"') + 0  # first char of the version string
+        indexOfVer = contentString.find('">', indexOfVer) + 2  # ending tag after the version string
+        endTag = contentString.find('</a>', indexOfVer)  # ending tag after the version string
+        return contentString[indexOfVer:endTag].strip()
+    except Exception:
+        print('Failed to find version number for: ' + addonpage)
+        return ''
 
 
 # Wowinterface

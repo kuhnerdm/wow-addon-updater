@@ -1,6 +1,9 @@
 import packages.requests as requests
 import zipfile
 from io import *
+from glob import glob
+import os
+import shutil
 
 
 # Site splitter
@@ -69,8 +72,7 @@ class Tukui:
         self.addonpage = addonpage
 
     def findLoc(self):
-        print('Tukui is not supported yet.')
-        return ''
+        return self.addonpage.replace('.git', '/repository/archive.zip?ref=master')
 
     def getVersion(self):
         try:
@@ -85,7 +87,20 @@ class Tukui:
             return ''
 
     def download(self, location):
-        return
+
+        temp = location + '/temp-dir'
+
+        ziploc = self.findLoc()
+        if ziploc == '':
+            return
+        try:
+            downloadZip(ziploc, temp)
+        except Exception:
+            print('Failed to download or extract zip file for addon. Skipping...\n')
+            return
+        for directory in glob(temp + '/*/*'):
+            copytree(directory, location + '/' + os.path.basename(directory))
+        shutil.rmtree(location + '/temp-dir')
 
 
 # Wowinterface
@@ -126,6 +141,7 @@ class Wowinterface:
         except Exception:
             print('Failed to download or extract zip file for addon. Skipping...\n')
             return
+
 
 def downloadZip(source, dest):
     r = requests.get(source, stream=True)

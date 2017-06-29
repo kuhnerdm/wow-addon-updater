@@ -1,8 +1,6 @@
-import zipfile, configparser
-from io import *
+import configparser
 from os.path import isfile, isdir
 import SiteHandler
-import packages.requests as requests
 
 
 def confirmExit():
@@ -50,27 +48,16 @@ class AddonUpdater:
         with open(self.ADDON_LIST_FILE, "r") as fin:
             for line in fin:
                 line = line.rstrip('\n')
-                currentVersion = SiteHandler.getCurrentVersion(line)
+                downloader = SiteHandler.createDownloader(line)
+                currentVersion = downloader.getVersion()
                 installedVersion = self.getInstalledVersion(line)
                 if not currentVersion == installedVersion:
                     print('Installing/updating addon: ' + line + ' to version: ' + currentVersion + '\n')
-                    ziploc = SiteHandler.findZiploc(line)
-                    self.getAddon(ziploc)
+                    downloader.download(self.WOW_ADDON_LOCATION)
                     if currentVersion is not '':
                         self.setInstalledVersion(line, currentVersion)
                 else:
                     print(line + ' version ' + currentVersion + ' is up to date.\n')
-
-    def getAddon(self, ziploc):
-        if ziploc == '':
-            return
-        try:
-            r = requests.get(ziploc, stream=True)
-            z = zipfile.ZipFile(BytesIO(r.content))
-            z.extractall(self.WOW_ADDON_LOCATION)
-        except Exception:
-            print('Failed to download or extract zip file for addon. Skipping...\n')
-            return
 
     def getInstalledVersion(self, addonpage):
         addonName = self.getAddonName(addonpage)

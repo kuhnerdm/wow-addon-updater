@@ -13,9 +13,9 @@ def createDownloader(addonpage):
     if addonpage.startswith('https://mods.curse.com/addons/wow/'):
         return Curse(addonpage)
 
-    # Tukui
+    # Tukui-git
     elif addonpage.startswith('http://git.tukui.org/'):
-        return Tukui(addonpage)
+        return Tukui_git(addonpage)
 
     # Wowinterface
     elif addonpage.startswith('http://www.wowinterface.com/'):
@@ -65,9 +65,9 @@ class Curse:
             return
 
 
-# Tukui
+# Tukui-git
 
-class Tukui:
+class Tukui_git:
     def __init__(self, addonpage):
         self.addonpage = addonpage
 

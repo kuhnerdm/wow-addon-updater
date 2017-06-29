@@ -10,11 +10,7 @@ This utility has two dependencies:
 
 * The [requests](http://docs.python-requests.org/en/master/) module
 
-If you are familiar with Python / Pip / etc, and already have Pip installed or know how to install it, then installing this should be as easy as "pip install requests". If you don't know what any of those words mean, don't fret. I've included some extra files (namely "get-pip.py", "get-requests.py", and "setup.bat") that should automatically install everything you need. All you need to do is right click on "setup.bat" and run it as an administrator.
-
-**NOTE: YOU MUST INSTALL PYTHON 3 ON YOUR OWN BEFORE RUNNING THE SETUP FILE. CLICK [HERE](https://www.python.org/downloads/) TO DO THAT FROM THE PYTHON SITE.**
-
-*Note for concerned nerds: The "setup.bat" file just runs "get-pip.py" and then "get-requests.py". The "get-pip.py" file is the standard file for easily installing Pip in a windows environment, and you may have seen it elsewhere on the internet. The "get-requests.py" file just has Pip install the requests module.*
+**NEW:** Thanks to https://github.com/Saritus, the requests module is now included in the download as a package, so there is no longer any need to install those yourself. Just install Python 3, download this app, configure the utility, and double click "WoWAddonUpdater.py" to start.
 
 ## Configuring the utility
 
@@ -65,7 +61,7 @@ Have any questions, concerns, issues, or suggestions for the utility? Feel free 
 
 * Update to use a visual interface instead of a command-line interface
 
-* Add version checking to eliminate reinstalls of the current versions of addons
+* ~~Add version checking to eliminate reinstalls of the current versions of addons~~ Thanks to https://github.com/zurohki for the code to implement this, and to https://github.com/Saritus for integrating it into the current codebase! You will now see reduced data usage of the app, and quicker update times!
 
 * ~~Make the code structure not suck. No, seriously... it's bad...~~ Thanks to https://github.com/Saritus for the refactoring!
 

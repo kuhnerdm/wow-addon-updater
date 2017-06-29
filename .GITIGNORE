@@ -1,5 +1,6 @@
 # Addon input file
 in.txt
+installed.txt
 
 # Settings for IntelliJ
 .idea/

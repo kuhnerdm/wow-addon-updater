@@ -56,9 +56,7 @@ class Curse:
         if ziploc == '':
             return
         try:
-            r = requests.get(ziploc, stream=True)
-            z = zipfile.ZipFile(BytesIO(r.content))
-            z.extractall(location)
+            downloadZip(ziploc, location)
         except Exception:
             print('Failed to download or extract zip file for addon. Skipping...\n')
             return
@@ -124,9 +122,12 @@ class Wowinterface:
         if ziploc == '':
             return
         try:
-            r = requests.get(ziploc, stream=True)
-            z = zipfile.ZipFile(BytesIO(r.content))
-            z.extractall(location)
+            downloadZip(ziploc, location)
         except Exception:
             print('Failed to download or extract zip file for addon. Skipping...\n')
             return
+
+def downloadZip(source, dest):
+    r = requests.get(source, stream=True)
+    z = zipfile.ZipFile(BytesIO(r.content))
+    z.extractall(dest)

@@ -131,3 +131,9 @@ def downloadZip(source, dest):
     r = requests.get(source, stream=True)
     z = zipfile.ZipFile(BytesIO(r.content))
     z.extractall(dest)
+
+
+def copytree(source, dest):
+    if os.path.exists(dest):
+        shutil.rmtree(dest)
+    shutil.copytree(source, dest)

@@ -81,14 +81,23 @@ class Tukui:
             contentString = str(page.content)
             indexOfZiploc = contentString.find('<a href="http://www.tukui.org/addons/downloads/') + 9  # first char of the url
             endQuote = contentString.find('">', indexOfZiploc)  # ending quote after the url
-            print(contentString[indexOfZiploc:endQuote])
-            return ''
+            return contentString[indexOfZiploc:endQuote]
         except Exception:
             print('Failed to find downloadable zip file for addon. Skipping...\n')
             return ''
 
     def getVersion(self):
-        return ''
+        try:
+            page = requests.get(self.addonpage)
+            contentString = str(page.content)
+            indexOfVer = contentString.find('Version:')  # first char of the version string
+            indexOfVer = contentString.find('<td', indexOfVer)  # first char of the version string
+            indexOfVer = contentString.find('">', indexOfVer) + 2  # first char of the version string
+            endTag = contentString.find('</td>', indexOfVer)  # ending tag after the version string
+            return contentString[indexOfVer:endTag].strip()
+        except Exception:
+            print('Failed to find version number for: ' + self.addonpage)
+            return ''
 
     def download(self, location):
         ziploc = self.findLoc()

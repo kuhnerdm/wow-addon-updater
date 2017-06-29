@@ -83,6 +83,8 @@ class AddonUpdater:
         addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
         addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
         addonName = addonName.replace('http://git.tukui.org/', '')
+        addonName = addonName.replace('http://www.tukui.org/addons/index.php?', '')
+        addonName = addonName.replace('=', '')
         return addonName
 
 

@@ -69,9 +69,7 @@ class AddonUpdater:
             return
 
     def getInstalledVersion(self, addonpage):
-        addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
-        addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
-        addonName = addonName.replace('http://git.tukui.org/', '')
+        addonName = self.getAddonName(addonpage)
         installedVers = configparser.ConfigParser()
         installedVers.read(self.INSTALLED_VERS_FILE)
         try:
@@ -80,14 +78,18 @@ class AddonUpdater:
             return 'version not found'
 
     def setInstalledVersion(self, addonpage, currentVersion):
-        addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
-        addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
-        addonName = addonName.replace('http://git.tukui.org/', '')
+        addonName = self.getAddonName(addonpage)
         installedVers = configparser.ConfigParser()
         installedVers.read(self.INSTALLED_VERS_FILE)
         installedVers.set('Installed Versions', addonName, currentVersion)
         with open(self.INSTALLED_VERS_FILE, 'w') as installedVersFile:
             installedVers.write(installedVersFile)
+
+    def getAddonName(self, addonpage):
+        addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
+        addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
+        addonName = addonName.replace('http://git.tukui.org/', '')
+        return addonName
 
 
 def main():

@@ -13,6 +13,10 @@ def createDownloader(addonpage):
     if addonpage.startswith('https://mods.curse.com/addons/wow/'):
         return Curse(addonpage)
 
+    # Tukui
+    elif addonpage.startswith('http://www.tukui.org/addons/'):
+        return Tukui(addonpage)
+
     # Tukui-git
     elif addonpage.startswith('http://git.tukui.org/'):
         return Tukui_git(addonpage)
@@ -53,6 +57,28 @@ class Curse:
         except Exception:
             print('Failed to find version number for: ' + self.addonpage)
             return ''
+
+    def download(self, location):
+        ziploc = self.findLoc()
+        if ziploc == '':
+            return
+        try:
+            downloadZip(ziploc, location)
+        except Exception:
+            print('Failed to download or extract zip file for addon. Skipping...\n')
+            return
+
+
+# Tukui
+class Tukui:
+    def __init__(self, addonpage):
+        self.addonpage = addonpage
+
+    def findLoc(self):
+        return ''
+
+    def getVersion(self):
+        return ''
 
     def download(self, location):
         ziploc = self.findLoc()

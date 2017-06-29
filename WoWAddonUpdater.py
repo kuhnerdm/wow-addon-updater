@@ -93,7 +93,7 @@ class AddonUpdater:
 def main():
     addonupdater = AddonUpdater()
     addonupdater.update()
-    confirmExit()
+    # confirmExit()
     return
 
 

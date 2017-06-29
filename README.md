@@ -20,6 +20,10 @@ The default location to install the addons to is "C:\Program Files (x86)\World o
 
 The default location of the addon list file is simply "in.txt", but this file will not exist on your PC, so you should either create "in.txt" in the same location as the utility, or name the file something else and edit "config.ini" to point to the new file.
 
+The "config.ini" file also has two other properties that you may not need to change. "Installed Versions File" determines where to store the file that keeps track of the current versions of your addons, and I don't recommend changing that.
+
+The "Close Automatically When Completed" property determines whether the window automatically closes when the process completes (both successfully and unsuccessfully). It defaults to "False" so that you can see if any errors occurred. If you run this utility as a scheduled job (e.g. upon startup, every x hours, etc), we recommend changing this to "True".
+
 ## Input file format
 
 Whatever file you use for your list of mods needs to be formatted in a particular way. Each line corresponds to a mod, and the line just needs to contain the link to the Curse or WoWInterface page for the mod. For example:

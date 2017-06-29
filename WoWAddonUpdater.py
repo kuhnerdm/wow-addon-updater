@@ -1,6 +1,6 @@
 import zipfile, configparser
 from io import *
-from os.path import isfile
+from os.path import isfile, isdir
 import SiteHandler
 import packages.requests as requests
 
@@ -28,6 +28,10 @@ class AddonUpdater:
             self.INSTALLED_VERS_FILE = config['WOW ADDON UPDATER']['Installed Versions File']
         except Exception:
             print('Failed to parse configuration file. Are you sure it is formatted correctly?\n')
+            confirmExit()
+
+        if not isdir(self.WOW_ADDON_LOCATION):
+            print('Failed to find the addons folder. Are you sure the folder exists?\n')
             confirmExit()
 
         if not isfile(self.ADDON_LIST_FILE):

@@ -1,8 +1,6 @@
-import zipfile, configparser
-from io import *
-from os.path import isfile
+import configparser
+from os.path import isfile, isdir
 import SiteHandler
-import packages.requests as requests
 
 
 def confirmExit():
@@ -31,6 +29,10 @@ class AddonUpdater:
             print('Failed to parse configuration file. Are you sure it is formatted correctly?\n')
             confirmExit()
 
+        if not isdir(self.WOW_ADDON_LOCATION):
+            print('Failed to find the addons folder. Are you sure the folder exists?\n')
+            confirmExit()
+
         if not isfile(self.ADDON_LIST_FILE):
             print('Failed to read addon list file. Are you sure the file exists?\n')
             confirmExit()
@@ -47,12 +49,12 @@ class AddonUpdater:
         with open(self.ADDON_LIST_FILE, "r") as fin:
             for line in fin:
                 line = line.rstrip('\n')
-                currentVersion = SiteHandler.getCurrentVersion(line)
+                downloader = SiteHandler.createDownloader(line)
+                currentVersion = downloader.getVersion()
                 installedVersion = self.getInstalledVersion(line)
                 if not currentVersion == installedVersion:
                     print('Installing/updating addon: ' + line + ' to version: ' + currentVersion + '\n')
-                    ziploc = SiteHandler.findZiploc(line)
-                    self.getAddon(ziploc)
+                    downloader.download(self.WOW_ADDON_LOCATION)
                     if currentVersion is not '':
                         self.setInstalledVersion(line, currentVersion)
                 else:
@@ -60,20 +62,8 @@ class AddonUpdater:
         if self.AUTO_CLOSE == 'False':
             confirmExit()
 
-    def getAddon(self, ziploc):
-        if ziploc == '':
-            return
-        try:
-            r = requests.get(ziploc, stream=True)
-            z = zipfile.ZipFile(BytesIO(r.content))
-            z.extractall(self.WOW_ADDON_LOCATION)
-        except Exception:
-            print('Failed to download or extract zip file for addon. Skipping...\n')
-            return
-
     def getInstalledVersion(self, addonpage):
-        addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
-        addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
+        addonName = self.getAddonName(addonpage)
         installedVers = configparser.ConfigParser()
         installedVers.read(self.INSTALLED_VERS_FILE)
         try:
@@ -82,13 +72,20 @@ class AddonUpdater:
             return 'version not found'
 
     def setInstalledVersion(self, addonpage, currentVersion):
-        addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
-        addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
+        addonName = self.getAddonName(addonpage)
         installedVers = configparser.ConfigParser()
         installedVers.read(self.INSTALLED_VERS_FILE)
         installedVers.set('Installed Versions', addonName, currentVersion)
         with open(self.INSTALLED_VERS_FILE, 'w') as installedVersFile:
             installedVers.write(installedVersFile)
+
+    def getAddonName(self, addonpage):
+        addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
+        addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
+        addonName = addonName.replace('http://git.tukui.org/', '')
+        addonName = addonName.replace('http://www.tukui.org/addons/index.php?', '')
+        addonName = addonName.replace('=', '')
+        return addonName
 
 
 def main():

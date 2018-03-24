@@ -145,6 +145,7 @@ def wowinterface(addonpage):
         indexOfZiploc = contentString.find('Problems with the download? <a href="')  # first char of the url
         if -1 == indexOfZipLoc:
             raise Exception('Unable to find link')
+        indexOfZiploc += 37
         endQuote = contentString.find('"', indexOfZiploc)  # ending quote after the url
         return contentString[indexOfZiploc:endQuote]
     except Exception:

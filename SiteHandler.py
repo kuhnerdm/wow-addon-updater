@@ -63,7 +63,6 @@ def curse(addonpage):
             raise Exception('Unable to find link')
         indexOfZipLoc += 22
         endQuote = contentString.find('"', indexOfZiploc)  # Will be the index of the ending quote after the url
-        print(contentString[indexOfZiploc:endQuote])
         return 'https://www.curseforge.com' + contentString[indexOfZiploc:endQuote]
     except Exception:
         print('Failed to find downloadable zip file for addon. Skipping...\n')

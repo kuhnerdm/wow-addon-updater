@@ -1,5 +1,6 @@
 import packages.requests as requests
 
+MAX_VERSION_LENGTH = 300
 
 # Site splitter
 
@@ -57,8 +58,12 @@ def curse(addonpage):
     try:
         page = requests.get(addonpage + '/download')
         contentString = str(page.content)
-        indexOfZiploc = contentString.find('download__link') + 22  # Will be the index of the first char of the url
+        indexOfZiploc = contentString.find('download__link')  # Will be the index of the first char of the url
+        if -1 == indexOfZipLoc:
+            raise Exception('Unable to find link')
+        indexOfZipLoc += 22
         endQuote = contentString.find('"', indexOfZiploc)  # Will be the index of the ending quote after the url
+        print(contentString[indexOfZiploc:endQuote])
         return 'https://www.curseforge.com' + contentString[indexOfZiploc:endQuote]
     except Exception:
         print('Failed to find downloadable zip file for addon. Skipping...\n')
@@ -79,9 +84,14 @@ def getCurseVersion(addonpage):
     try:
         page = requests.get(addonpage + '/files')
         contentString = str(page.content)
-        indexOfVer = contentString.find('file__name full') + 17  # first char of the version string
+        indexOfVer = contentString.find('file__name full')  # first char of the version string
+        if -1 == indexOfVer:
+            raise Exception('Unable to find link')
+        indexOfVer += 17
         endTag = contentString.find('</span>', indexOfVer)  # ending tag after the version string
-        return contentString[indexOfVer:endTag].strip()
+        if endTag - indexOfVer > MAX_VERSION_LENGTH:
+            endTag = indexOfVer + MAX_VERSION_LENGTH
+        return contentString[indexOfVer:endTag].strip().replace('\n', 'n').replace('=', 'e')
     except Exception:
         print('Failed to find version number for: ' + addonpage)
         return ''
@@ -100,9 +110,14 @@ def getCurseProjectVersion(addonpage):
     try:
         page = requests.get(addonpage + '/files')
         contentString = str(page.content)
-        indexOfVer = contentString.find('data-name') + 11  # first char of the version string
+        indexOfVer = contentString.find('data-name')  # first char of the version string
+        if -1 == indexOfVer:
+            raise Exception('Unable to find link')
+        indexOfVer += 11
         endTag = contentString.find('">', indexOfVer)  # ending tag after the version string
-        return contentString[indexOfVer:endTag].strip()
+        if endTag - indexOfVer > MAX_VERSION_LENGTH:
+            endTag = indexOfVer + MAX_VERSION_LENGTH
+        return contentString[indexOfVer:endTag].strip().replace('\n', 'n').replace('=', 'e')
     except Exception:
         print('Failed to find version number for: ' + addonpage)
         return ''
@@ -127,7 +142,9 @@ def wowinterface(addonpage):
     try:
         page = requests.get(downloadpage + '/download')
         contentString = str(page.content)
-        indexOfZiploc = contentString.find('Problems with the download? <a href="') + 37  # first char of the url
+        indexOfZiploc = contentString.find('Problems with the download? <a href="')  # first char of the url
+        if -1 == indexOfZipLoc:
+            raise Exception('Unable to find link')
         endQuote = contentString.find('"', indexOfZiploc)  # ending quote after the url
         return contentString[indexOfZiploc:endQuote]
     except Exception:
@@ -139,9 +156,14 @@ def getWowinterfaceVersion(addonpage):
     try:
         page = requests.get(addonpage)
         contentString = str(page.content)
-        indexOfVer = contentString.find('id="version"') + 22  # first char of the version string
+        indexOfVer = contentString.find('id="version"')  # first char of the version string
+        if -1 == indexOfVer:
+            raise Exception('Unable to find link')
+        indexOfVer += 22
         endTag = contentString.find('</div>', indexOfVer)  # ending tag after the version string
-        return contentString[indexOfVer:endTag].strip()
+        if endTag - indexOfVer > MAX_VERSION_LENGTH:
+            endTag = indexOfVer + MAX_VERSION_LENGTH
+        return contentString[indexOfVer:endTag].strip().replace('\n', 'n').replace('=', 'e')
     except Exception:
         print('Failed to find version number for: ' + addonpage)
         return ''

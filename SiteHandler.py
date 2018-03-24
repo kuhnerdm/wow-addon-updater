@@ -6,7 +6,7 @@ import packages.requests as requests
 def findZiploc(addonpage):
     # Curse
     if addonpage.startswith('https://mods.curse.com/addons/wow/'):
-        return curse('https://www.curseforge.com/wow/addons/' + addonpage.split('/')[-1])
+        return curse(convertOldCurseURL(addonpage))
     elif addonpage.startswith('https://www.curseforge.com/wow/addons/'):
         return curse(addonpage)
 
@@ -30,7 +30,7 @@ def findZiploc(addonpage):
 def getCurrentVersion(addonpage):
     # Curse
     if addonpage.startswith('https://mods.curse.com/addons/wow/'):
-        return getCurseVersion('https://www.curseforge.com/wow/addons/' + addonpage.split('/')[-1])
+        return getCurseVersion(convertOldCurseURL(addonpage))
     elif addonpage.startswith('https://www.curseforge.com/wow/addons/'):
         return getCurseVersion(addonpage)
 
@@ -64,6 +64,16 @@ def curse(addonpage):
         print('Failed to find downloadable zip file for addon. Skipping...\n')
         return ''
 
+def convertOldCurseURL(addonpage):
+    try:
+        # Curse has renamed some addons, removing the numbers from the URL. Rather than guess at what the new
+        # name and URL is, just try to load the old URL and see where Curse redirects us to. We can guess at
+        # the new URL, but they should know their own renaming scheme better than we do.
+        page = requests.get(addonpage)
+        return page.url
+    except Exception:
+        print('Failed to find the current page for old URL "' + addonpage + '". Skipping...\n')
+        return ''
 
 def getCurseVersion(addonpage):
     try:

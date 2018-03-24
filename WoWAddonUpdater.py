@@ -44,22 +44,35 @@ class AddonUpdater:
 
     def update(self):
         # Main process (yes I formatted the project badly)
+        uberlist = []
         with open(self.ADDON_LIST_FILE, "r") as fin:
             for line in fin:
+                current_node = []
                 line = line.rstrip('\n')
+                if not line or line.startswith('#'):
+                    continue
                 currentVersion = SiteHandler.getCurrentVersion(line)
                 if currentVersion is None:
                     currentVersion = 'Not Available'
+                current_node.append(line.split("/")[-1])
+                current_node.append(SiteHandler.getCurrentVersion(line))
                 installedVersion = self.getInstalledVersion(line)
                 if not currentVersion == installedVersion:
                     print('Installing/updating addon: ' + line + ' to version: ' + currentVersion + '\n')
                     ziploc = SiteHandler.findZiploc(line)
                     self.getAddon(ziploc)
+                    current_node.append(self.getInstalledVersion(line))
                     if currentVersion is not '':
                         self.setInstalledVersion(line, currentVersion)
                 else:
                     print(line + ' version ' + currentVersion + ' is up to date.\n')
+                    current_node.append("Up to date")
+                uberlist.append(current_node)
         if self.AUTO_CLOSE == 'False':
+            col_width = max(len(word) for row in uberlist for word in row) + 2  # padding
+            print("".join(word.ljust(col_width) for word in ("Name","Iversion","Cversion")))
+            for row in uberlist:
+                print("".join(word.ljust(col_width) for word in row), end='\n')
             confirmExit()
 
     def getAddon(self, ziploc):

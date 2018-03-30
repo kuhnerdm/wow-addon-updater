@@ -59,9 +59,9 @@ def curse(addonpage):
         page = requests.get(addonpage + '/download')
         contentString = str(page.content)
         indexOfZiploc = contentString.find('download__link')  # Will be the index of the first char of the url
-        if -1 == indexOfZipLoc:
+        if -1 == indexOfZiploc:
             raise Exception('Unable to find link')
-        indexOfZipLoc += 22
+        indexOfZiploc += 22
         endQuote = contentString.find('"', indexOfZiploc)  # Will be the index of the ending quote after the url
         return 'https://www.curseforge.com' + contentString[indexOfZiploc:endQuote]
     except Exception:

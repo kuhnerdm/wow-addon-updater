@@ -53,16 +53,17 @@ class AddonUpdater:
                     continue
                 currentVersion = SiteHandler.getCurrentVersion(line)
                 if currentVersion is None:
-                    currentVersion = 'Not Available'
+                    currentVersion = ''
                 current_node.append(line.split("/")[-1])
                 current_node.append(SiteHandler.getCurrentVersion(line))
                 installedVersion = self.getInstalledVersion(line)
                 if not currentVersion == installedVersion:
                     print('Installing/updating addon: ' + line + ' to version: ' + currentVersion + '\n')
                     ziploc = SiteHandler.findZiploc(line)
-                    self.getAddon(ziploc)
+                    if not self.getAddon(ziploc):
+                        ziploc = ''
                     current_node.append(self.getInstalledVersion(line))
-                    if currentVersion is not '':
+                    if currentVersion is not '' and ziploc is not '':
                         self.setInstalledVersion(line, currentVersion)
                 else:
                     print(line + ' version ' + currentVersion + ' is up to date.\n')
@@ -77,14 +78,15 @@ class AddonUpdater:
 
     def getAddon(self, ziploc):
         if ziploc == '':
-            return
+            return False
         try:
             r = requests.get(ziploc, stream=True)
             z = zipfile.ZipFile(BytesIO(r.content))
             z.extractall(self.WOW_ADDON_LOCATION)
+            return True
         except Exception:
             print('Failed to download or extract zip file for addon. Skipping...\n')
-            return
+            return False
 
     def getInstalledVersion(self, addonpage):
         addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')

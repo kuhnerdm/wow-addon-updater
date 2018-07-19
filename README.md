@@ -1,9 +1,8 @@
-# wow-addon-updater - Color output text!
+# wow-addon-updater - Now supports Tukui!
+
 This utility provides an alternative to the Twitch/Curse client for management and updating of addons for World of Warcraft. The Twitch/Curse client is rather bloated and buggy, and comes with many features that most users will not ever use in the first place. This utility, however, is lightweight and makes it very easy to manage which addons are being updated, and to update them just by running a python script.
 
 ## Changelog
-
-* 6/19/2018 - Added Colored text output and general prettierness
 
 * 6/30/2018 - Added license information. This shouldn't really affect anyone's use of or contributions to the project.
 

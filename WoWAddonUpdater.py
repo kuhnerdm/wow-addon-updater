@@ -7,8 +7,8 @@ import tempfile
 import SiteHandler
 import packages.requests as requests
 from termcolor import colored   # termcolor and colorama for colored output text
-from colorama import init       # changed all print statements to include color tags
-init()                          # changed text layout during output
+from colorama import init
+init()
 from colorama import Fore 
 from colorama import Style
 
@@ -22,7 +22,7 @@ class AddonUpdater:
 
         # Read config file
         if not isfile('config.ini'):
-            print(Fore.RED + 'Failed to read configuration file. Are you sure there is a file called "config.ini"?'+ Style.RESET_ALL)
+            print('Failed to read configuration file. Are you sure there is a file called "config.ini"?\n')
             confirmExit()
 
         config = configparser.ConfigParser()
@@ -34,11 +34,11 @@ class AddonUpdater:
             self.INSTALLED_VERS_FILE = config['WOW ADDON UPDATER']['Installed Versions File']
             self.AUTO_CLOSE = config['WOW ADDON UPDATER']['Close Automatically When Completed']
         except Exception:
-            print(Fore.RED + 'Failed to parse configuration file. Are you sure it is formatted correctly?'+ Style.RESET_ALL)
+            print('Failed to parse configuration file. Are you sure it is formatted correctly?\n')
             confirmExit()
 
         if not isfile(self.ADDON_LIST_FILE):
-            print(Fore.RED + 'Failed to read addon list file. Are you sure the file exists?'+ Style.RESET_ALL)
+            print('Failed to read addon list file. Are you sure the file exists?\n')
             confirmExit()
 
         if not isfile(self.INSTALLED_VERS_FILE):
@@ -82,9 +82,9 @@ class AddonUpdater:
                 uberlist.append(current_node)
         if self.AUTO_CLOSE == 'False':
             col_width = max(len(word) for row in uberlist for word in row) + 2  # padding
-            print(Fore.YELLOW + Style.BRIGHT + "".join(word.ljust(col_width) for word in ("Addon Name","Updated Version","Previous version")))
+            print('\n' + Fore.YELLOW + Style.BRIGHT + "".join(word.ljust(col_width) for word in ("Addon Name","Updated Version","Previous version"))) #add newline and adjust heading, Cant figure out howto align the right heading properly
             for row in uberlist:
-                print(Fore.GREEN + "".join(word.ljust(col_width) for word in row), end='\n')
+                print('\x1b[1A' + Fore.GREEN + "".join(word.ljust(col_width) for word in row), end='\n') #Unsure how to remove the double spacing onthe summary, 
             confirmExit()
 
     def getAddon(self, ziploc, subfolder):

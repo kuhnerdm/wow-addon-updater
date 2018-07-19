@@ -1,8 +1,8 @@
 import packages.requests as requests
 import re
 from termcolor import colored   # termcolor and colorama for colored output text
-from colorama import init       # changed all print statements to include color tags
-init()                          # changed text layout during output
+from colorama import init
+init()
 from colorama import Fore 
 from colorama import Style
 

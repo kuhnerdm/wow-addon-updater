@@ -1,5 +1,10 @@
 import packages.requests as requests
 import re
+from termcolor import colored   # termcolor and colorama for colored output text
+from colorama import init       # changed all print statements to include color tags
+init()                          # changed text layout during output
+from colorama import Fore 
+from colorama import Style
 
 # Site splitter
 
@@ -36,7 +41,7 @@ def findZiploc(addonpage):
 
     # Invalid page
     else:
-        print('Invalid addon page.')
+        print(Fore.RED + 'Invalid addon page.' + Style.RESET_ALL)
 
 
 def getCurrentVersion(addonpage):
@@ -64,7 +69,7 @@ def getCurrentVersion(addonpage):
 
     # Invalid page
     else:
-        print('Invalid addon page.')
+        print(Fore.RED + 'Invalid addon page.' + Style.RESET_ALL)
 
 
 def getAddonName(addonpage):
@@ -92,7 +97,7 @@ def curse(addonpage):
         endQuote = contentString.find('"', indexOfZiploc)  # Will be the index of the ending quote after the url
         return 'https://www.curseforge.com' + contentString[indexOfZiploc:endQuote]
     except Exception:
-        print('Failed to find downloadable zip file for addon. Skipping...\n')
+        print(Fore.RED + 'Failed to find downloadable zip file for addon. Skipping...' + Style.RESET_ALL)
         return ''
 
 def curseDatastore(addonpage):
@@ -119,7 +124,7 @@ def curseDatastore(addonpage):
         projectPageDomain = projectPage[0:endOfProjectPageDomain]
         return projectPageDomain + contentString[indexOfZiploc:endOfZiploc]
     except Exception:
-        print('Failed to find downloadable zip file for addon. Skipping...\n')
+        print(Fore.RED + 'Failed to find downloadable zip file for addon. Skipping...' + Style.RESET_ALL)
         return ''
 
 def convertOldCurseURL(addonpage):
@@ -131,7 +136,7 @@ def convertOldCurseURL(addonpage):
         page.raise_for_status()
         return page.url
     except Exception:
-        print('Failed to find the current page for old URL "' + addonpage + '". Skipping...\n')
+        print(Fore.RED + 'Failed to find the current page for old URL "' + Fore.GREEN + addonpage + Fore.RED + '". Skipping...' + Style.RESET_ALL)
         return ''
 
 def getCurseVersion(addonpage):
@@ -149,7 +154,7 @@ def getCurseVersion(addonpage):
         endTag = contentString.find('</span>', indexOfVer)  # ending tag after the version string
         return contentString[indexOfVer:endTag].strip()
     except Exception:
-        print('Failed to find version number for: ' + addonpage)
+        print(Fore.RED + 'Failed to find version number for: ' + Fore.GREEN + addonpage + Style.RESET_ALL)
         return ''
 
 def getCurseDatastoreVersion(addonpage):
@@ -165,7 +170,7 @@ def getCurseDatastoreVersion(addonpage):
         # Now just call getCurseProjectVersion with the URL we found
         return getCurseProjectVersion(projectPage)
     except Exception:
-        print('Failed to find alpha version number for: ' + addonpage)
+        print(Fore.RED + 'Failed to find alpha version number for: ' + Fore.GREEN + addonpage + Style.RESET_ALL)
 
 
 # Curse Project
@@ -180,7 +185,7 @@ def curseProject(addonpage):
             return wowAceProject(page.url)
         return addonpage + '/files/latest'
     except Exception:
-        print('Failed to find downloadable zip file for addon. Skipping...\n')
+        print(Fore.RED + 'Failed to find downloadable zip file for addon. Skipping...' + Style.RESET_ALL)
         return ''
 
 
@@ -198,7 +203,7 @@ def getCurseProjectVersion(addonpage):
         endTag = contentString.find('">', indexOfVer)  # ending tag after the version string
         return contentString[indexOfVer:endTag].strip()
     except Exception:
-        print('Failed to find version number for: ' + addonpage)
+        print(Fore.RED + 'Failed to find version number for: ' + Fore.GREEN + addonpage + Style.RESET_ALL)
         return ''
 
 
@@ -208,7 +213,7 @@ def wowAceProject(addonpage):
     try:
         return addonpage + '/files/latest'
     except Exception:
-        print('Failed to find downloadable zip file for addon. Skipping...\n')
+        print(Fore.RED + 'Failed to find downloadable zip file for addon. Skipping...' + Style.RESET_ALL)
         return ''
 
 
@@ -222,7 +227,7 @@ def getWowAceProjectVersion(addonpage):
         endTag = contentString.find('">', indexOfVer)  # ending tag after the version string
         return contentString[indexOfVer:endTag].strip()
     except Exception:
-        print('Failed to find version number for: ' + addonpage)
+        print(Fore.RED + 'Failed to find version number for: ' + Fore.GREEN + addonpage + Style.RESET_ALL)
         return ''
 
 
@@ -232,7 +237,7 @@ def tukui(addonpage):
     try:
         return addonpage + '/repository/development/archive.zip'
     except Exception:
-        print('Failed to find downloadable zip file for addon. Skipping...\n')
+        print(Fore.RED + 'Failed to find downloadable zip file for addon. Skipping...' + Style.RESET_ALL)
         return ''
 
 
@@ -246,7 +251,7 @@ def getTukuiVersion(addonpage):
             result = match.group('hash')
         return result.strip()
     except Exception as err:
-        print('Failed to find version number for: ' + addonpage)
+        print(Fore.RED + 'Failed to find version number for: ' + Fore.GREEN + addonpage + Style.RESET_ALL)
         print(err)
         return ''
 
@@ -263,7 +268,7 @@ def wowinterface(addonpage):
         endQuote = contentString.find('"', indexOfZiploc)  # ending quote after the url
         return contentString[indexOfZiploc:endQuote]
     except Exception:
-        print('Failed to find downloadable zip file for addon. Skipping...\n')
+        print(Fore.RED + 'Failed to find downloadable zip file for addon. Skipping...' + Style.RESET_ALL)
         return ''
 
 
@@ -276,5 +281,5 @@ def getWowinterfaceVersion(addonpage):
         endTag = contentString.find('</div>', indexOfVer)  # ending tag after the version string
         return contentString[indexOfVer:endTag].strip()
     except Exception:
-        print('Failed to find version number for: ' + addonpage)
+        print(Fore.RED + 'Failed to find version number for: ' + Fore.GREEN + addonpage + Style.RESET_ALL)
         return ''

@@ -6,12 +6,15 @@ import shutil
 import tempfile
 import SiteHandler
 import packages.requests as requests
-
+from termcolor import colored   # termcolor and colorama for colored output text
+from colorama import init
+init()
+from colorama import Fore 
+from colorama import Style
 
 def confirmExit():
     input('\nPress the Enter key to exit')
     exit(0)
-
 
 class AddonUpdater:
     def __init__(self):
@@ -63,25 +66,25 @@ class AddonUpdater:
                 if currentVersion is None:
                     currentVersion = 'Not Available'
                 current_node.append(addonName)
-                current_node.append(currentVersion)
+                current_node.append(Fore.GREEN + currentVersion + Style.RESET_ALL)
                 installedVersion = self.getInstalledVersion(line)
                 if not currentVersion == installedVersion:
-                    print('Installing/updating addon: ' + addonName + ' to version: ' + currentVersion + '\n')
+                    print (Fore.BLUE + Style.BRIGHT + '[Updating...]' + '\x1b[2C' + Style.NORMAL + Fore.GREEN + addonName + Style.RESET_ALL + ' to version: ' + Style.BRIGHT + Fore.GREEN + currentVersion + Style.RESET_ALL)
                     ziploc = SiteHandler.findZiploc(line)
                     install_success = False
                     install_success = self.getAddon(ziploc, subfolder)
-                    current_node.append(self.getInstalledVersion(line))
+                    current_node.append(Fore.BLUE + Style.BRIGHT + self.getInstalledVersion(line) + Style.RESET_ALL)
                     if install_success is True and currentVersion is not '':
                         self.setInstalledVersion(line, currentVersion)
                 else:
-                    print(addonName + ' version ' + currentVersion + ' is up to date.\n')
-                    current_node.append("Up to date")
+                    print(Style.BRIGHT + Fore.GREEN +'[Up to date ]' + '\x1b[2C' + Fore.GREEN + Style.DIM + addonName + Style.RESET_ALL + ' version ' + Fore.GREEN + currentVersion + Style.RESET_ALL)
+                    current_node.append(Fore.GREEN + Style.BRIGHT + "Up to date" + Style.RESET_ALL)
                 uberlist.append(current_node)
         if self.AUTO_CLOSE == 'False':
             col_width = max(len(word) for row in uberlist for word in row) + 2  # padding
-            print("".join(word.ljust(col_width) for word in ("Name","Iversion","Cversion")))
+            print('\n' + Fore.YELLOW + Style.BRIGHT + "".join(word.ljust(col_width) for word in ("Addon Name","Updated Version","Previous version"))) #add newline and adjust heading, Cant figure out howto align the right heading properly
             for row in uberlist:
-                print("".join(word.ljust(col_width) for word in row), end='\n')
+                print('\x1b[1A' + Fore.GREEN + "".join(word.ljust(col_width) for word in row), end='\n') #Unsure how to remove the double spacing onthe summary, 
             confirmExit()
 
     def getAddon(self, ziploc, subfolder):
@@ -93,7 +96,7 @@ class AddonUpdater:
             self.extract(z, ziploc, subfolder)
             return True
         except Exception:
-            print('Failed to download or extract zip file for addon. Skipping...\n')
+            print(Fore.RED + 'Failed to download or extract zip file for addon. Skipping...\n' + Style.RESET_ALL)
             return False
     
     def extract(self, zip, url, subfolder):
@@ -111,7 +114,7 @@ class AddonUpdater:
                     shutil.rmtree(destination_dir, ignore_errors=True)
                     shutil.copytree(subfolderPath, destination_dir)
             except Exception as ex:
-                print('Failed to get subfolder ' + subfolder)
+                print(Fore.RED + 'Failed to get subfolder ' + subfolder + Style.RESET_ALL)
 
     def getInstalledVersion(self, addonpage):
         addonName = SiteHandler.getAddonName(addonpage)

@@ -4,7 +4,7 @@ This utility provides an alternative to the Twitch/Curse client for management a
 
 ## Changelog
 
-* 7/20/2018 - Updated Tukui / ElvUI Site Handler 
+* 7/20/2018 - Updated Tukui / ElvUI Site Handler, amended ElvUI instructions below
 
 * 7/19/2018 - Added colored output for update and summary
 
@@ -63,6 +63,7 @@ Each link needs to be the main page for the addon, as shown above.
 If you want to extract a subfolder from the default downloaded folder (typically needed with Tukui addons), add a pipe character (|) and the name of the subfolder at the end of the line. For example, the ElvUI addon can be added as follows:
 
     https://git.tukui.org/elvui/elvui|ElvUI
+	https://git.tukui.org/elvui/elvui|ElvUI_Config
 
 because the downloadable zip from this website contains a subfolder called "ElvUI" containing the actual mod.
 

@@ -140,7 +140,7 @@ class AddonUpdater:
 
     def uninstallAddon(self): # Allows user to uninstall addon by removing its URL from ADDON_LIST_FILE
         with open(self.ADDON_LIST_FILE) as f:   # Read all URLs in ADDON_LIST_FILE into a list
-            content = f.read().splitlines()
+            content = [i.replace('#', '') for i in f.read().splitlines()]
         config = configparser.ConfigParser()    # Read INSTALLED_VERS_FILE
         config.read(self.INSTALLED_VERS_FILE)
         installed = [section for section in config.sections()]  # Put all URLs in INSTALLED_VERS_FILE into a list

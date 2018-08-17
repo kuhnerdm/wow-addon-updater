@@ -37,7 +37,7 @@ class AddonUpdater:
             confirmExit()
 
         if not isfile(self.INSTALLED_VERS_FILE):
-            open(self.INSTALLED_VERS_FILE, 'w') # Create installed versions file since it doesn't exist
+            open(self.INSTALLED_VERS_FILE, 'w').close() # Create installed versions file if it doesn't exist
 
         return
 

@@ -31,8 +31,10 @@ This utility provides an alternative to the Twitch/Curse client for management a
 This utility has two dependencies:
 
 * A version of [Python](https://www.python.org/) 3 (Any version of Python 3 should do)
-
+* [python-pip](https://pypi.org/project/pip/) for installing the following modules 
 * The [requests](http://docs.python-requests.org/en/master/) module
+* The [termcolor](https://pypi.org/project/termcolor/) module
+* The [colorama](https://pypi.org/project/colorama/) module
 
 Thanks to https://github.com/Saritus, the requests module is now included in the download as a package, so there is no longer any need to install those yourself. Just install Python 3, download this app, configure the utility, and double click "WoWAddonUpdater.py" to start.
 

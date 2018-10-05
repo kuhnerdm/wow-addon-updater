@@ -1,7 +1,7 @@
 import zipfile, configparser
 from io import BytesIO
-from os.path import isfile, join
-from os import listdir
+from os.path import isfile, join, abspath, dirname
+from os import listdir, chdir
 import shutil
 import tempfile
 import SiteHandler
@@ -96,7 +96,7 @@ class AddonUpdater:
         except Exception:
             print('Failed to download or extract zip file for addon. Skipping...\n')
             return False
-    
+
     def extract(self, zip, url, subfolder):
         if subfolder == '':
             zip.extractall(self.WOW_ADDON_LOCATION)
@@ -139,6 +139,8 @@ class AddonUpdater:
 
 
 def main():
+    chdir(dirname(abspath(__file__)))
+
     if(isfile('changelog.txt')):
         downloadedChangelog = requests.get('https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master/changelog.txt').text.split('\n')
         with open('changelog.txt') as cl:
@@ -148,7 +150,7 @@ def main():
 
     if(downloadedChangelog != presentChangelog):
         print('A new update to WoWAddonUpdater is available! Check it out at https://github.com/kuhnerdm/wow-addon-updater !')
-    
+
     addonupdater = AddonUpdater()
     addonupdater.update()
     return

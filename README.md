@@ -6,13 +6,12 @@ Changelog located in changelog.txt
 
 ## First-time setup
 
-This utility has two dependencies:
+This utility requires a version of [Python](https://www.python.org/) 3 (Any version of Python 3 should do).
 
-* A version of [Python](https://www.python.org/) 3 (Any version of Python 3 should do)
+Download the zip file from github for this project. Unzip the folder to where you want to keep it. Open the command line or python shell and run
 
-* The [requests](http://docs.python-requests.org/en/master/) module
+    python wow-addon-updater.py setup
 
-Thanks to https://github.com/Saritus, the requests module is now included in the download as a package, so there is no longer any need to install those yourself. Just install Python 3, download this app, configure the utility, and double click "WoWAddonUpdater.py" to start.
 
 ## Configuring the utility
 
@@ -47,15 +46,37 @@ because the downloadable zip from this website contains a subfolder called "ElvU
 ## macOS Installation Instructions - Thanks to https://github.com/melwan
 
 1. Install Python 3 for macOS
-2. Run get-pip.py (Run menu > Run Module)
-3. Run get-requests.py (Run menu > Run Module)
-4. Edit config.ini (using TextEdit.app)
-5. Create in.txt (using TextEdit.app)
-6. Run WoWAddonUpdater.py (Run menu > Run Module)
+2. Run python wow-addon-updater.py setup
+3. Edit config.ini (using TextEdit.app)
+4. Create in.txt (using TextEdit.app)
+5. Run WoWAddonUpdater.py (Run menu > Run Module)
 
 The standard addon location on macOS is /Applications/World of Warcraft/Interface/AddOns
 
 *Note: To save to a .txt file in TextEdit, go to Preferences > "New Document" tab > Under the "Format" section, choose "Plain Text".*
+
+## Linux installation
+
+1. Install Python 3 for Linux, if not already installed*
+2. Download and extract *wow-addon-updater-master.zip* to where you want to run it from
+3. Navigate to your `/wow-addon-updater` folder
+4. Run python wow-addon-updater.py setup
+5. Edit *config.ini*
+6. Create and edit *in.txt*
+ - Use `touch in.txt` command, or your preferred text editor
+7. Open terminal and use `cd` to navigate to `/wow-addon-updater` folder
+ - E.g. default `cd ~/Downloads/wow-addon-updater-master`
+8. Run `python3 WoWAddonUpdater.py`
+
+#### Standard location for add-ons
+
+Installed with PlayOnLinux: 
+`/home/USERNAME/PlayOnLinux's virtual drives/battle.net/drive_c/Program Files/World of Warcraft/Interface/AddOns/`
+
+Installed with WINE: 
+`/home/USERNAME/.wine/drive_c/Program\ Files/World\ of\ Warcraft/Interface/AddOns/`
+
+**Note: Most new Linux distros have Python 3 pre-installed.*
 
 ## Running the utility
 

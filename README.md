@@ -6,12 +6,7 @@ Changelog located in changelog.txt
 
 ## First-time setup
 
-This utility requires a version of [Python](https://www.python.org/) 3 (Any version of Python 3 should do).
-
-Download the zip file from github for this project. Unzip the folder to where you want to keep it. Open the command line or python shell and run
-
-    python wow-addon-updater.py setup
-
+Download the zip file from github for this project. Unzip the folder to where you want to keep it. Create the "in.txt" file with a link for each addon (details below). Run the WoWAddonUpdater.exe and enjoy!
 
 ## Configuring the utility
 
@@ -43,10 +38,10 @@ If you want to extract a subfolder from the default downloaded folder (typically
 
 because the downloadable zip from this website contains a subfolder called "ElvUI" containing the actual mod.
 
-## macOS Installation Instructions - Thanks to https://github.com/melwan
+## macOS Installation Instructions
 
 1. Install Python 3 for macOS
-2. Run python wow-addon-updater.py setup
+2. Run pip install requests
 3. Edit config.ini (using TextEdit.app)
 4. Create in.txt (using TextEdit.app)
 5. Run WoWAddonUpdater.py (Run menu > Run Module)
@@ -60,7 +55,7 @@ The standard addon location on macOS is /Applications/World of Warcraft/Interfac
 1. Install Python 3 for Linux, if not already installed*
 2. Download and extract *wow-addon-updater-master.zip* to where you want to run it from
 3. Navigate to your `/wow-addon-updater` folder
-4. Run python wow-addon-updater.py setup
+4. Run pip install requests
 5. Edit *config.ini*
 6. Create and edit *in.txt*
  - Use `touch in.txt` command, or your preferred text editor
@@ -83,6 +78,15 @@ Installed with WINE:
 After configuring the utility and setting up your input file, updating your addons is as simple as double clicking the "WoWAddonUpdater.py" file.
 
 *Note: The more addons you have in your list, the longer it will take to update them... Duh.*
+
+## Build instructions for release
+
+Create a virtualenv using pipenv preferably.
+    
+    pip install -d pyinstaller
+    pyinstaller WoWAddonUpdater.spec
+
+Zip up /dist/WoWAddonUpdater/ and upload to github as release.
 
 ## Contact info
 

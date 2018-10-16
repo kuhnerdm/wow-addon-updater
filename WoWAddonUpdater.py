@@ -5,6 +5,7 @@ import zipfile
 from io import BytesIO
 from os import listdir
 from os.path import isfile, join
+from tkinter import *
 
 from requests import get
 
@@ -142,6 +143,7 @@ class AddonUpdater:
 
 
 def main():
+    root = Tk()
     downloaded_changelog, present_changelog = None, None
     if isfile('changelog.txt'):
         downloaded_changelog = get('https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master'
@@ -156,6 +158,10 @@ def main():
               'https://github.com/kuhnerdm/wow-addon-updater !')
 
     addon_updater = AddonUpdater()
+
+    # TODO command line parsing for -s silent
+    # TODO design buttons
+
     addon_updater.update()
     return
 

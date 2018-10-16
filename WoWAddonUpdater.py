@@ -158,17 +158,44 @@ def check_updates():
               'https://github.com/kuhnerdm/wow-addon-updater !')
 
 
+def save_addon_list():
+    file = open('in.txt', 'w')
+    file.seek(0)
+    file.truncate()
+    file.write(addon_links_text.get("1.0", END))
+    file.close()
+
+
+# gui items as globals
+root = Tk()
+addon_links_text = Text(root, height=50, width=150)
+
+
 def main():
     check_updates()
     parser = argparse.ArgumentParser(description='Python script for mass-updating World of Warcraft addons')
     parser.add_argument('-s', help='stops gui from running', action='store_true')
-    root = Tk()
+    # TODO Verbose option for printing addon progress and progress bar for command line
     addon_updater = AddonUpdater()
     args = parser.parse_args()
     if args.s:
         addon_updater.update()
     else:
-        # TODO design buttons
+        # build gui if not silent
+        root.title("Wow Addon Updater")
+        root.bind('<Escape>', root.destroy)
+        addon_links_text.pack()
+        with open('in.txt', 'r') as file:
+            addon_links_text.insert(INSERT, file.read())
+        save_button = Button(root, text='Save Addon List', command=save_addon_list)
+        save_button.pack()
+        # TODO tkinter hangs when addon updates are triggered
+        update_addons_button = Button(root, text='Update Addons', command=addon_updater.update)
+        update_addons_button.pack()
+        # TODO print update progress onto gui
+
+        # TODO config changes
+        # TODO scrollbar https://stackoverflow.com/questions/13832720/how-to-attach-a-scrollbar-to-a-text-widget
         root.mainloop()
 
 

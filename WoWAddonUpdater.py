@@ -1,3 +1,4 @@
+import argparse
 import configparser
 import shutil
 import tempfile
@@ -142,28 +143,33 @@ class AddonUpdater:
             installed_version.write(installed_version_file)
 
 
-def main():
-    root = Tk()
+def check_updates():
+    # TODO change update procedure to not split on new changelog
     downloaded_changelog, present_changelog = None, None
     if isfile('changelog.txt'):
         downloaded_changelog = get('https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master'
-                                            '/changelog.txt').text.split('\n')
+                                   '/changelog.txt').text.split('\n')
         with open('changelog.txt') as cl:
             present_changelog = cl.readlines()
             for i in range(len(present_changelog)):
                 present_changelog[i] = present_changelog[i].strip('\n')
-
     if downloaded_changelog != present_changelog:
         print('A new update to WoWAddonUpdater is available! Check it out at '
               'https://github.com/kuhnerdm/wow-addon-updater !')
 
+
+def main():
+    check_updates()
+    parser = argparse.ArgumentParser(description='Python script for mass-updating World of Warcraft addons')
+    parser.add_argument('-s', help='stops gui from running', action='store_true')
+    root = Tk()
     addon_updater = AddonUpdater()
-
-    # TODO command line parsing for -s silent
-    # TODO design buttons
-
-    addon_updater.update()
-    return
+    args = parser.parse_args()
+    if args.s:
+        addon_updater.update()
+    else:
+        # TODO design buttons
+        root.mainloop()
 
 
 if __name__ == "__main__":

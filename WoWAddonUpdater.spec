@@ -4,9 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['WoWAddonUpdater.py'],
-             pathex=['C:\\Users\\coleb\\PycharmProjects\\wow-addon-updater\\wowaddonupdater'],
+             pathex=['C:\\Users\\coleb\\PycharmProjects\\wow-addon-updater'],
              binaries=[],
-             datas=[],
+             datas=[('config.ini', '.')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

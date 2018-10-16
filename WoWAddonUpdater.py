@@ -8,12 +8,11 @@ from os.path import isfile, join
 
 from requests import get
 
-from wowaddonupdater import SiteHandler
+import SiteHandler
 
 
 def confirm_exit():
     input('\nPress the Enter key to exit')
-    exit(0)
 
 
 class AddonUpdater:

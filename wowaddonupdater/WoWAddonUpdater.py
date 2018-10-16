@@ -6,9 +6,9 @@ from io import BytesIO
 from os import listdir
 from os.path import isfile, join
 
-import requests
+from requests import get
 
-import SiteHandler
+from wowaddonupdater import SiteHandler
 
 
 def confirm_exit():
@@ -90,7 +90,7 @@ class AddonUpdater:
         if ziploc == '':
             return False
         try:
-            r = requests.get(ziploc, stream=True)
+            r = get(ziploc, stream=True)
             r.raise_for_status()   # Raise an exception for HTTP errors
             z = zipfile.ZipFile(BytesIO(r.content))
             self.extract(z, subfolder)
@@ -145,7 +145,7 @@ class AddonUpdater:
 def main():
     downloaded_changelog, present_changelog = None, None
     if isfile('changelog.txt'):
-        downloaded_changelog = requests.get('https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master'
+        downloaded_changelog = get('https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master'
                                             '/changelog.txt').text.split('\n')
         with open('changelog.txt') as cl:
             present_changelog = cl.readlines()

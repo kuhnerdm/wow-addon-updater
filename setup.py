@@ -53,5 +53,5 @@ setup(
     author='kuhnerdm',
     author_email='kuhnerdm@gmail.com',
     description='This utility provides an alternative to the Twitch/Curse client for management and updating of '
-                'addons for World of Warcraft. '
+                'addons for World of Warcraft. ', install_requires=['requests']
 )

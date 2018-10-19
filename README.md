@@ -96,12 +96,8 @@ Have any questions, concerns, issues, or suggestions for the utility? Feel free 
 
 * Make a video guide detailing all the above information
 
-* Update to use a visual interface instead of a command-line interface
-
-* ~~Add version checking to eliminate reinstalls of the current versions of addons~~ Thanks to https://github.com/zurohki for the code to implement this, and to https://github.com/Saritus for integrating it into the current codebase! You will now see reduced data usage of the app, and quicker update times!
-
-* ~~Make the code structure not suck. No, seriously... it's bad...~~ Thanks to https://github.com/Saritus for the refactoring!
-
-* ~~Add support for more addon providers (namely WoWInterface)~~ Thanks to https://github.com/Saritus for the WoWInterface support!
-
 Thanks for checking this out; hopefully it helps a lot of you :)
+
+## Media 
+
+[World of Warcraft icon](https://findicons.com/icon/58556/world_of_warcraft#) by [MazenI77](http://mazenl77.deviantart.com/) is licensed under [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/)

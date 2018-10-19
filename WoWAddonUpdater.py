@@ -13,18 +13,14 @@ from requests import get
 import SiteHandler
 
 
-def confirm_exit():
-    input('\nPress the Enter key to exit')
-
-
 class AddonUpdater:
     def __init__(self):
         print('')
 
         # Read config file
         if not isfile('config.ini'):
+            # TODO push errors to log file
             print('Failed to read configuration file. Are you sure there is a file called "config.ini"?\n')
-            confirm_exit()
 
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -36,11 +32,9 @@ class AddonUpdater:
             self.AUTO_CLOSE = config['WOW ADDON UPDATER']['Close Automatically When Completed']
         except configparser.ParsingError as err:
             print('Could not parse:', err)
-            confirm_exit()
 
         if not isfile(self.ADDON_LIST_FILE):
             print('Failed to read addon list file. Are you sure the file exists?\n')
-            confirm_exit()
 
         if not isfile(self.INSTALLED_VERSION_FILE):
             with open(self.INSTALLED_VERSION_FILE, 'w') as new_installed_version_file:
@@ -70,22 +64,14 @@ class AddonUpdater:
                 current_node.append(current_version)
                 installed_version = self.get_installed_version(line, subfolder)
                 if not current_version == installed_version:
-                    print('Installing/updating addon: ' + addon_name + ' to version: ' + current_version + '\n')
                     ziploc = SiteHandler.find_ziploc(line)
                     install_success = self.get_addon(ziploc, subfolder)
                     current_node.append(self.get_installed_version(line, subfolder))
                     if install_success and (current_version is not ''):
                         self.set_installed_version(line, subfolder, current_version)
                 else:
-                    print(addon_name + ' version ' + current_version + ' is up to date.\n')
                     current_node.append("Up to date")
                 addon_list.append(current_node)
-        if self.AUTO_CLOSE == 'False':
-            col_width = max(len(word) for row in addon_list for word in row) + 2  # padding
-            print("".join(word.ljust(col_width) for word in ("Name", "Iversion", "Cversion")))
-            for row in addon_list:
-                print("".join(word.ljust(col_width) for word in row), end='\n')
-            confirm_exit()
 
     def get_addon(self, ziploc, subfolder):
         if ziploc == '':
@@ -166,8 +152,14 @@ def save_addon_list():
     file.close()
 
 
-# gui items as globals
+def update_addons_wrapper():
+    root.after(0, addon_updater.update())
+
+
+# globals
+addon_updater = AddonUpdater()
 root = Tk()
+root.iconbitmap('world_of_warcraft.ico')
 addon_links_text = Text(root, height=50, width=150)
 
 
@@ -175,15 +167,13 @@ def main():
     check_updates()
     parser = argparse.ArgumentParser(description='Python script for mass-updating World of Warcraft addons')
     parser.add_argument('-s', help='stops gui from running', action='store_true')
-    # TODO Verbose option for printing addon progress and progress bar for command line
-    addon_updater = AddonUpdater()
     args = parser.parse_args()
     if args.s:
         addon_updater.update()
     else:
         # build gui if not silent
         root.title("Wow Addon Updater")
-        root.bind('<Escape>', root.destroy)
+        root.bind('<Escape>', sys.exit)
         addon_links_text.pack()
         with open('in.txt', 'r') as file:
             addon_links_text.insert(INSERT, file.read())
@@ -194,8 +184,7 @@ def main():
         update_addons_button.pack()
         # TODO print update progress onto gui
 
-        # TODO config changes
-        # TODO scrollbar https://stackoverflow.com/questions/13832720/how-to-attach-a-scrollbar-to-a-text-widget
+        # TODO config changes gui
         root.mainloop()
 
 

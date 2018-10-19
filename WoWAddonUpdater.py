@@ -27,17 +27,14 @@ class AddonUpdater:
 
         try:
             self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']
-            self.ADDON_LIST_FILE = config['WOW ADDON UPDATER']['Addon List File']
-            self.INSTALLED_VERSION_FILE = config['WOW ADDON UPDATER']['Installed Versions File']
-            self.AUTO_CLOSE = config['WOW ADDON UPDATER']['Close Automatically When Completed']
         except configparser.ParsingError as err:
             print('Could not parse:', err)
 
-        if not isfile(self.ADDON_LIST_FILE):
+        if not isfile("in.txt"):
             print('Failed to read addon list file. Are you sure the file exists?\n')
 
-        if not isfile(self.INSTALLED_VERSION_FILE):
-            with open(self.INSTALLED_VERSION_FILE, 'w') as new_installed_version_file:
+        if not isfile("installed.txt"):
+            with open("installed.txt", 'w') as new_installed_version_file:
                 new_installed_version = configparser.ConfigParser()
                 new_installed_version['Installed Versions'] = {}
                 new_installed_version.write(new_installed_version_file)
@@ -45,7 +42,7 @@ class AddonUpdater:
 
     def update(self):
         addon_list = []
-        with open(self.ADDON_LIST_FILE, "r") as fin:
+        with open("in.txt", "r") as fin:
             for line in fin:
                 current_node = []
                 line = line.rstrip('\n')
@@ -106,7 +103,7 @@ class AddonUpdater:
     def get_installed_version(self, addon_page, subfolder):
         addon_name = SiteHandler.get_addon_name(addon_page)
         installed_version = configparser.ConfigParser()
-        installed_version.read(self.INSTALLED_VERSION_FILE)
+        installed_version.read("installed.txt")
         try:
             if subfolder:
                 return installed_version['Installed Versions'][addon_name + '|' + subfolder]  # Keep subfolder info in
@@ -119,13 +116,13 @@ class AddonUpdater:
     def set_installed_version(self, addon_page, subfolder, current_version):
         addon_name = SiteHandler.get_addon_name(addon_page)
         installed_version = configparser.ConfigParser()
-        installed_version.read(self.INSTALLED_VERSION_FILE)
+        installed_version.read("installed.txt")
         if subfolder:
             installed_version.set('Installed Versions', addon_name + '|' + subfolder, current_version)  # Keep subfolder
             # info in installed listing
         else:
             installed_version.set('Installed Versions', addon_name, current_version)
-        with open(self.INSTALLED_VERSION_FILE, 'w') as installed_version_file:
+        with open("installed.txt", 'w') as installed_version_file:
             installed_version.write(installed_version_file)
 
 
@@ -161,6 +158,7 @@ addon_updater = AddonUpdater()
 root = Tk()
 root.iconbitmap('world_of_warcraft.ico')
 addon_links_text = Text(root, height=50, width=150)
+progress_log_text = Text(root, height=20, width=150)
 
 
 def main():
@@ -183,8 +181,9 @@ def main():
         update_addons_button = Button(root, text='Update Addons', command=addon_updater.update)
         update_addons_button.pack()
         # TODO print update progress onto gui
+        progress_log_text.pack()
 
-        # TODO config changes gui
+        # TODO wow directory config
         root.mainloop()
 
 

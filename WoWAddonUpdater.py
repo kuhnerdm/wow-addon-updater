@@ -7,6 +7,7 @@ from io import BytesIO
 from os import listdir
 from os.path import isfile, join
 from tkinter import *
+from tkinter import filedialog
 
 from requests import get
 
@@ -100,7 +101,8 @@ class AddonUpdater:
             except shutil.Error as err:
                 print('Failed to get subfolder ' + subfolder, err)
 
-    def get_installed_version(self, addon_page, subfolder):
+    @staticmethod
+    def get_installed_version(addon_page, subfolder):
         addon_name = SiteHandler.get_addon_name(addon_page)
         installed_version = configparser.ConfigParser()
         installed_version.read("installed.txt")
@@ -113,7 +115,8 @@ class AddonUpdater:
         except configparser.ParsingError:
             return 'version not found'
 
-    def set_installed_version(self, addon_page, subfolder, current_version):
+    @staticmethod
+    def set_installed_version(addon_page, subfolder, current_version):
         addon_name = SiteHandler.get_addon_name(addon_page)
         installed_version = configparser.ConfigParser()
         installed_version.read("installed.txt")
@@ -153,12 +156,21 @@ def update_addons_wrapper():
     root.after(0, addon_updater.update())
 
 
+def browse_folder():
+    filename = filedialog.askdirectory()
+    addon_updater.WOW_ADDON_LOCATION = filename
+    folder_path_label['text'] = filename
+
+
 # globals
+# TODO move globals into addon_updater class
 addon_updater = AddonUpdater()
 root = Tk()
 root.iconbitmap('world_of_warcraft.ico')
-addon_links_text = Text(root, height=50, width=150)
-progress_log_text = Text(root, height=20, width=150)
+addon_links_text = Text(root, height=40, width=150)
+folder_path_label = Label(root)
+folder_browse_button = Button(root, text='Browse', command=browse_folder)
+progress_log_text = Text(root, height=1, width=150)
 
 
 def main():
@@ -180,11 +192,12 @@ def main():
         # TODO tkinter hangs when addon updates are triggered
         update_addons_button = Button(root, text='Update Addons', command=addon_updater.update)
         update_addons_button.pack()
+        folder_path_label.pack()
+        folder_path_label['text'] = addon_updater.WOW_ADDON_LOCATION
+        folder_browse_button.pack()
+        root.mainloop()
         # TODO print update progress onto gui
         progress_log_text.pack()
-
-        # TODO wow directory config
-        root.mainloop()
 
 
 if __name__ == "__main__":

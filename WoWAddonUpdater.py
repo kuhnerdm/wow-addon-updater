@@ -154,6 +154,26 @@ class AddonUpdater:
         self.WOW_ADDON_LOCATION = filename
         self.folder_path_label['text'] = filename
 
+    def build_gui(self):
+        self.root.title("Wow Addon Updater")
+        self.root.bind('<Escape>', sys.exit)
+        self.root.iconbitmap('world_of_warcraft.ico')
+        self.addon_links_text.pack()
+        with open('in.txt', 'r') as file:
+            self.addon_links_text.insert(INSERT, file.read())
+        save_button = Button(self.root, text='Save Addon List', command=self.save_addon_list)
+        save_button.pack()
+        # TODO tkinter hangs when addon updates are triggered
+        update_addons_button = Button(self.root, text='Update Addons',
+                                      command=self.update_addons_wrapper)
+        update_addons_button.pack()
+        self.folder_path_label.pack()
+        self.folder_path_label['text'] = self.WOW_ADDON_LOCATION
+        folder_browse_button = Button(self.root, text='Browse')
+        folder_browse_button.pack()
+        folder_browse_button.config(command=self.browse_folder)
+        self.status_bar.pack(side=BOTTOM, fill=X)
+
 
 def check_updates():
     # TODO change update procedure to not split on new changelog
@@ -179,24 +199,7 @@ def main():
     if args.s:
         addon_updater.update()
     else:
-        addon_updater.root.title("Wow Addon Updater")
-        addon_updater.root.bind('<Escape>', sys.exit)
-        addon_updater.root.iconbitmap('world_of_warcraft.ico')
-        addon_updater.addon_links_text.pack()
-        with open('in.txt', 'r') as file:
-            addon_updater.addon_links_text.insert(INSERT, file.read())
-        save_button = Button(addon_updater.root, text='Save Addon List', command=addon_updater.save_addon_list)
-        save_button.pack()
-        # TODO tkinter hangs when addon updates are triggered
-        update_addons_button = Button(addon_updater.root, text='Update Addons',
-                                      command=addon_updater.update_addons_wrapper)
-        update_addons_button.pack()
-        addon_updater.folder_path_label.pack()
-        addon_updater.folder_path_label['text'] = addon_updater.WOW_ADDON_LOCATION
-        folder_browse_button = Button(addon_updater.root, text='Browse')
-        folder_browse_button.pack()
-        folder_browse_button.config(command=addon_updater.browse_folder)
-        addon_updater.status_bar.pack(side=BOTTOM, fill=X)
+        addon_updater.build_gui()
         addon_updater.root.mainloop()
 
 

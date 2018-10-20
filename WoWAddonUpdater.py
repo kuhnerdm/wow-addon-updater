@@ -160,6 +160,7 @@ class AddonUpdater:
         file.close()
 
     def update_addons_wrapper(self):
+        self.save_addon_list()
         self.root.after(0, self.update())
 
     def browse_folder(self):

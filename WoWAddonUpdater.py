@@ -16,12 +16,11 @@ import SiteHandler
 
 class AddonUpdater:
     def __init__(self):
-        print('')
-
         # Read config file
         if not isfile('config.ini'):
             # TODO push errors to log file
-            print('Failed to read configuration file. Are you sure there is a file called "config.ini"?\n')
+            status_bar['text'] = 'Failed to read configuration file. Are you sure there is a file called ' \
+                                 '"config.ini"?'
 
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -29,10 +28,10 @@ class AddonUpdater:
         try:
             self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']
         except configparser.ParsingError as err:
-            print('Could not parse:', err)
+            status_bar['text'] = 'Could not parse:' + str(err)
 
         if not isfile("in.txt"):
-            print('Failed to read addon list file. Are you sure the file exists?\n')
+            status_bar['text'] = 'Failed to read addon list file. Are you sure the file exists?'
 
         if not isfile("installed.txt"):
             with open("installed.txt", 'w') as new_installed_version_file:
@@ -62,12 +61,14 @@ class AddonUpdater:
                 current_node.append(current_version)
                 installed_version = self.get_installed_version(line, subfolder)
                 if not current_version == installed_version:
+                    status_bar['text'] = 'Installing/updating addon: ' + addon_name + ' to version: ' + current_version
                     ziploc = SiteHandler.find_ziploc(line)
                     install_success = self.get_addon(ziploc, subfolder)
                     current_node.append(self.get_installed_version(line, subfolder))
                     if install_success and (current_version is not ''):
                         self.set_installed_version(line, subfolder, current_version)
                 else:
+                    status_bar['text'] = addon_name + ' version ' + current_version + ' is up to date.'
                     current_node.append("Up to date")
                 addon_list.append(current_node)
 
@@ -81,7 +82,7 @@ class AddonUpdater:
             self.extract(z, subfolder)
             return True
         except ConnectionError as err:
-            print('Failed to download or extract zip file for addon. Skipping...', err)
+            status_bar['text'] = 'Failed to download or extract zip file for addon. Skipping...' + str(err)
             return False
 
     def extract(self, zip_file, subfolder):
@@ -99,7 +100,7 @@ class AddonUpdater:
                     shutil.rmtree(destination_dir, ignore_errors=True)
                     shutil.copytree(subfolder_path, destination_dir)
             except shutil.Error as err:
-                print('Failed to get subfolder ' + subfolder, err)
+                status_bar['text'] = 'Failed to get subfolder ' + subfolder + str(err)
 
     @staticmethod
     def get_installed_version(addon_page, subfolder):
@@ -170,7 +171,7 @@ root.iconbitmap('world_of_warcraft.ico')
 addon_links_text = Text(root, height=40, width=150)
 folder_path_label = Label(root)
 folder_browse_button = Button(root, text='Browse', command=browse_folder)
-progress_log_text = Text(root, height=1, width=150)
+status_bar = Label(root, text="", bd=1, relief=SUNKEN, anchor=W)
 
 
 def main():
@@ -190,14 +191,13 @@ def main():
         save_button = Button(root, text='Save Addon List', command=save_addon_list)
         save_button.pack()
         # TODO tkinter hangs when addon updates are triggered
-        update_addons_button = Button(root, text='Update Addons', command=addon_updater.update)
+        update_addons_button = Button(root, text='Update Addons', command=update_addons_wrapper)
         update_addons_button.pack()
         folder_path_label.pack()
         folder_path_label['text'] = addon_updater.WOW_ADDON_LOCATION
         folder_browse_button.pack()
+        status_bar.pack(side=BOTTOM, fill=X)
         root.mainloop()
-        # TODO print update progress onto gui
-        progress_log_text.pack()
 
 
 if __name__ == "__main__":

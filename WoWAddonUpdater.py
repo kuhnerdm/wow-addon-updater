@@ -1,5 +1,6 @@
 import argparse
 import configparser
+import logging
 import shutil
 import tempfile
 import zipfile
@@ -22,14 +23,13 @@ class AddonUpdater:
     folder_path_label = Label(root)
     folder_browse_button = Button(root, text='Browse')
     status_bar = Label(root, text="", bd=1, relief=SUNKEN, anchor=W)
+    logging = logging.basicConfig(filename='updater.log', level=logging.DEBUG)
 
     def __init__(self):
-        # Read config file
         if not isfile('config.ini'):
-            # TODO push errors to log file
             self.status_bar['text'] = 'Failed to read configuration file. Are you sure there is a file called ' \
                                       '"config.ini"?'
-
+            logging.warning('Failed to read configuration file. Are you sure there is a file called "config.ini"?')
         config = configparser.ConfigParser()
         config.read('config.ini')
 
@@ -37,9 +37,11 @@ class AddonUpdater:
             self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']
         except configparser.ParsingError as err:
             self.status_bar['text'] = 'Could not parse:' + str(err)
+            logging.warning('Could not parse:' + str(err))
 
         if not isfile("in.txt"):
             self.status_bar['text'] = 'Failed to read addon list file. Are you sure the file exists?'
+            logging.warning('Failed to read addon list file. Are you sure the file exists?')
 
         if not isfile("installed.txt"):
             with open("installed.txt", 'w') as new_installed_version_file:
@@ -85,6 +87,7 @@ class AddonUpdater:
                 if not current_version == installed_version:
                     self.status_bar[
                         'text'] = 'Installing/updating addon: ' + addon_name + ' to version: ' + current_version
+                    logging.info('Installing/updating addon: ' + addon_name + ' to version: ' + current_version)
                     ziploc = SiteHandler.find_ziploc(line)
                     install_success = self.get_addon(ziploc, subfolder)
                     current_node.append(self.get_installed_version(line, subfolder))
@@ -100,12 +103,13 @@ class AddonUpdater:
             return False
         try:
             r = get(ziploc, stream=True)
-            r.raise_for_status()   # Raise an exception for HTTP errors
+            r.raise_for_status()  # Raise an exception for HTTP errors
             z = zipfile.ZipFile(BytesIO(r.content))
             self.extract(z, subfolder)
             return True
         except ConnectionError as err:
             self.status_bar['text'] = 'Failed to download or extract zip file for addon. Skipping...' + str(err)
+            logging.warning('Failed to download or extract zip file for addon. Skipping...' + str(err))
             return False
 
     def extract(self, zip_file, subfolder):
@@ -124,6 +128,7 @@ class AddonUpdater:
                     shutil.copytree(subfolder_path, destination_dir)
             except shutil.Error as err:
                 self.status_bar['text'] = 'Failed to get subfolder ' + subfolder + str(err)
+                logging.warning('Failed to get subfolder ' + subfolder + str(err))
 
     @staticmethod
     def get_installed_version(addon_page, subfolder):

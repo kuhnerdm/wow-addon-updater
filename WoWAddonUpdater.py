@@ -15,12 +15,20 @@ import SiteHandler
 
 
 class AddonUpdater:
+    # TODO silent ui switch still presents blank gui window
+    root = Tk()
+    root.iconbitmap('world_of_warcraft.ico')
+    addon_links_text = Text(root, height=40, width=150)
+    folder_path_label = Label(root)
+    folder_browse_button = Button(root, text='Browse')
+    status_bar = Label(root, text="", bd=1, relief=SUNKEN, anchor=W)
+
     def __init__(self):
         # Read config file
         if not isfile('config.ini'):
             # TODO push errors to log file
-            status_bar['text'] = 'Failed to read configuration file. Are you sure there is a file called ' \
-                                 '"config.ini"?'
+            self.status_bar['text'] = 'Failed to read configuration file. Are you sure there is a file called ' \
+                                      '"config.ini"?'
 
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -28,17 +36,31 @@ class AddonUpdater:
         try:
             self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']
         except configparser.ParsingError as err:
-            status_bar['text'] = 'Could not parse:' + str(err)
+            self.status_bar['text'] = 'Could not parse:' + str(err)
 
         if not isfile("in.txt"):
-            status_bar['text'] = 'Failed to read addon list file. Are you sure the file exists?'
+            self.status_bar['text'] = 'Failed to read addon list file. Are you sure the file exists?'
 
         if not isfile("installed.txt"):
             with open("installed.txt", 'w') as new_installed_version_file:
                 new_installed_version = configparser.ConfigParser()
                 new_installed_version['Installed Versions'] = {}
                 new_installed_version.write(new_installed_version_file)
-        return
+
+        self.root.title("Wow Addon Updater")
+        self.root.bind('<Escape>', sys.exit)
+        self.addon_links_text.pack()
+        with open('in.txt', 'r') as file:
+            self.addon_links_text.insert(INSERT, file.read())
+        save_button = Button(self.root, text='Save Addon List', command=self.save_addon_list)
+        save_button.pack()
+        # TODO tkinter hangs when addon updates are triggered
+        update_addons_button = Button(self.root, text='Update Addons', command=self.update_addons_wrapper)
+        update_addons_button.pack()
+        self.folder_path_label.pack()
+        self.folder_path_label['text'] = self.WOW_ADDON_LOCATION
+        self.folder_browse_button.pack()
+        self.status_bar.pack(side=BOTTOM, fill=X)
 
     def update(self):
         addon_list = []
@@ -61,14 +83,15 @@ class AddonUpdater:
                 current_node.append(current_version)
                 installed_version = self.get_installed_version(line, subfolder)
                 if not current_version == installed_version:
-                    status_bar['text'] = 'Installing/updating addon: ' + addon_name + ' to version: ' + current_version
+                    self.status_bar[
+                        'text'] = 'Installing/updating addon: ' + addon_name + ' to version: ' + current_version
                     ziploc = SiteHandler.find_ziploc(line)
                     install_success = self.get_addon(ziploc, subfolder)
                     current_node.append(self.get_installed_version(line, subfolder))
                     if install_success and (current_version is not ''):
                         self.set_installed_version(line, subfolder, current_version)
                 else:
-                    status_bar['text'] = addon_name + ' version ' + current_version + ' is up to date.'
+                    self.status_bar['text'] = addon_name + ' version ' + current_version + ' is up to date.'
                     current_node.append("Up to date")
                 addon_list.append(current_node)
 
@@ -82,7 +105,7 @@ class AddonUpdater:
             self.extract(z, subfolder)
             return True
         except ConnectionError as err:
-            status_bar['text'] = 'Failed to download or extract zip file for addon. Skipping...' + str(err)
+            self.status_bar['text'] = 'Failed to download or extract zip file for addon. Skipping...' + str(err)
             return False
 
     def extract(self, zip_file, subfolder):
@@ -100,7 +123,7 @@ class AddonUpdater:
                     shutil.rmtree(destination_dir, ignore_errors=True)
                     shutil.copytree(subfolder_path, destination_dir)
             except shutil.Error as err:
-                status_bar['text'] = 'Failed to get subfolder ' + subfolder + str(err)
+                self.status_bar['text'] = 'Failed to get subfolder ' + subfolder + str(err)
 
     @staticmethod
     def get_installed_version(addon_page, subfolder):
@@ -129,6 +152,21 @@ class AddonUpdater:
         with open("installed.txt", 'w') as installed_version_file:
             installed_version.write(installed_version_file)
 
+    def save_addon_list(self):
+        file = open('in.txt', 'w')
+        file.seek(0)
+        file.truncate()
+        file.write(self.addon_links_text.get("1.0", END))
+        file.close()
+
+    def update_addons_wrapper(self):
+        self.root.after(0, self.update())
+
+    def browse_folder(self):
+        filename = filedialog.askdirectory()
+        self.WOW_ADDON_LOCATION = filename
+        self.folder_path_label['text'] = filename
+
 
 def check_updates():
     # TODO change update procedure to not split on new changelog
@@ -145,59 +183,17 @@ def check_updates():
               'https://github.com/kuhnerdm/wow-addon-updater !')
 
 
-def save_addon_list():
-    file = open('in.txt', 'w')
-    file.seek(0)
-    file.truncate()
-    file.write(addon_links_text.get("1.0", END))
-    file.close()
-
-
-def update_addons_wrapper():
-    root.after(0, addon_updater.update())
-
-
-def browse_folder():
-    filename = filedialog.askdirectory()
-    addon_updater.WOW_ADDON_LOCATION = filename
-    folder_path_label['text'] = filename
-
-
-# globals
-# TODO move globals into addon_updater class
-addon_updater = AddonUpdater()
-root = Tk()
-root.iconbitmap('world_of_warcraft.ico')
-addon_links_text = Text(root, height=40, width=150)
-folder_path_label = Label(root)
-folder_browse_button = Button(root, text='Browse', command=browse_folder)
-status_bar = Label(root, text="", bd=1, relief=SUNKEN, anchor=W)
-
-
 def main():
     check_updates()
+    addon_updater = AddonUpdater()
     parser = argparse.ArgumentParser(description='Python script for mass-updating World of Warcraft addons')
     parser.add_argument('-s', help='stops gui from running', action='store_true')
     args = parser.parse_args()
     if args.s:
         addon_updater.update()
     else:
-        # build gui if not silent
-        root.title("Wow Addon Updater")
-        root.bind('<Escape>', sys.exit)
-        addon_links_text.pack()
-        with open('in.txt', 'r') as file:
-            addon_links_text.insert(INSERT, file.read())
-        save_button = Button(root, text='Save Addon List', command=save_addon_list)
-        save_button.pack()
-        # TODO tkinter hangs when addon updates are triggered
-        update_addons_button = Button(root, text='Update Addons', command=update_addons_wrapper)
-        update_addons_button.pack()
-        folder_path_label.pack()
-        folder_path_label['text'] = addon_updater.WOW_ADDON_LOCATION
-        folder_browse_button.pack()
-        status_bar.pack(side=BOTTOM, fill=X)
-        root.mainloop()
+        addon_updater.folder_browse_button.config(command=addon_updater.browse_folder)
+        addon_updater.root.mainloop()
 
 
 if __name__ == "__main__":

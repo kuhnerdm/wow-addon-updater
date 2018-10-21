@@ -1,6 +1,7 @@
 # Addon input file
 in.txt
 installed.txt
+updater.log
 
 # Settings for IntelliJ
 .idea/
@@ -9,3 +10,5 @@ installed.txt
 __pycache__/
 .vscode/
 desktop.ini
+dist/
+build/

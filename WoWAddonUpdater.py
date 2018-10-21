@@ -31,7 +31,7 @@ class GUI:
     def update_addons_wrapper(self, addon_updater):
         self.save_addon_list()
         update_results = addon_updater.update()
-        messagebox.showinfo("Addon Update Results", update_results)
+        messagebox.showinfo("Addon Update Results", '\n'.join(update_results))
 
     def browse_folder(self, addon_updater):
         filename = filedialog.askdirectory()

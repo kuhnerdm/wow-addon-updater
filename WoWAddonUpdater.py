@@ -46,7 +46,6 @@ class AddonUpdater:
                 new_installed_version.write(new_installed_version_file)
 
     def update(self):
-        self.save_addon_list()
         addon_list = []
         with open("in.txt", "r") as fin:
             for line in fin:
@@ -147,6 +146,7 @@ class AddonUpdater:
         file.close()
 
     def update_addons_wrapper(self):
+        self.save_addon_list()
         self.root.after(0, self.update())
 
     def browse_folder(self):
@@ -163,7 +163,8 @@ class AddonUpdater:
             self.addon_links_text.insert(INSERT, file.read())
         save_button = Button(self.root, text='Save Addon List', command=self.save_addon_list)
         save_button.pack()
-        # TODO tkinter hangs when addon updates are triggered
+        # TODO extract GUI as class
+        # TODO give GUI class its own thread using threading
         update_addons_button = Button(self.root, text='Update Addons',
                                       command=self.update_addons_wrapper)
         update_addons_button.pack()

@@ -9,6 +9,7 @@ from os import listdir
 from os.path import isfile, join
 from tkinter import *
 from tkinter import filedialog
+from tkinter import messagebox
 
 from requests import get
 
@@ -19,7 +20,6 @@ class GUI:
     root = Tk()
     addon_links_text = Text(root, height=40, width=150)
     folder_path_label = Label(root)
-    status_bar = Label(root, text="", relief=SUNKEN)
 
     def save_addon_list(self):
         file = open('in.txt', 'w')
@@ -30,7 +30,8 @@ class GUI:
 
     def update_addons_wrapper(self, addon_updater):
         self.save_addon_list()
-        self.root.after(0, addon_updater.update(self))
+        update_results = addon_updater.update()
+        messagebox.showinfo("Addon Update Results", update_results)
 
     def browse_folder(self, addon_updater):
         filename = filedialog.askdirectory()
@@ -46,7 +47,6 @@ class GUI:
             self.addon_links_text.insert(INSERT, file.read())
         save_button = Button(self.root, text='Save Addon List', command=self.save_addon_list)
         save_button.grid(row=8, column=0, sticky=W + E)
-        # TODO give GUI class its own thread using threading
         update_addons_button = Button(self.root, text='Update Addons',
                                       command=lambda: self.update_addons_wrapper(addon_updater))
         update_addons_button.grid(row=8, column=1, sticky=W + E)
@@ -55,7 +55,6 @@ class GUI:
         folder_browse_button = Button(self.root, text='Browse')
         folder_browse_button.grid(row=8, column=3, sticky=W + E)
         folder_browse_button.config(command=lambda: self.browse_folder(addon_updater))
-        self.status_bar.grid(row=9, column=0, columnspan=4, sticky=W + E)
 
 
 class AddonUpdater:
@@ -80,7 +79,8 @@ class AddonUpdater:
                 new_installed_version['Installed Versions'] = {}
                 new_installed_version.write(new_installed_version_file)
 
-    def update(self, gui):
+    def update(self):
+        update_results = []
         addon_list = []
         with open("in.txt", "r") as fin:
             for line in fin:
@@ -101,8 +101,8 @@ class AddonUpdater:
                 current_node.append(current_version)
                 installed_version = self.get_installed_version(line, subfolder)
                 if not current_version == installed_version:
-                    gui.status_bar[
-                        'text'] = 'Installing/updating addon: ' + addon_name + ' to version: ' + current_version
+                    update_results.append(
+                        'Installing/updating addon: ' + addon_name + ' to version: ' + current_version)
                     logging.info('Installing/updating addon: ' + addon_name + ' to version: ' + current_version)
                     ziploc = SiteHandler.find_ziploc(line)
                     install_success = self.get_addon(ziploc, subfolder)
@@ -110,9 +110,10 @@ class AddonUpdater:
                     if install_success and (current_version is not ''):
                         self.set_installed_version(line, subfolder, current_version)
                 else:
-                    gui.status_bar['text'] = addon_name + ' version ' + current_version + ' is up to date.'
+                    update_results.append(addon_name + ' version ' + current_version + ' is up to date.')
                     current_node.append("Up to date")
                 addon_list.append(current_node)
+        return update_results
 
     def get_addon(self, ziploc, subfolder):
         if ziploc == '':
@@ -195,7 +196,7 @@ def main():
     parser.add_argument('-s', help='stops gui from running', action='store_true')
     args = parser.parse_args()
     if args.s:
-        addon_updater.update(gui)
+        addon_updater.update()
     else:
         gui.build_gui(addon_updater)
         gui.root.mainloop()

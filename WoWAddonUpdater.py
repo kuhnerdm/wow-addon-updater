@@ -19,7 +19,7 @@ class GUI:
     root = Tk()
     addon_links_text = Text(root, height=40, width=150)
     folder_path_label = Label(root)
-    status_bar = Label(root, text="", bd=1, relief=SUNKEN, anchor=W)
+    status_bar = Label(root, text="", relief=SUNKEN)
 
     def save_addon_list(self):
         file = open('in.txt', 'w')
@@ -38,25 +38,24 @@ class GUI:
         self.folder_path_label['text'] = filename
 
     def build_gui(self, addon_updater):
-        # TODO grid pack gui elements
         self.root.title("Wow Addon Updater")
         self.root.bind('<Escape>', sys.exit)
         self.root.iconbitmap('world_of_warcraft.ico')
-        self.addon_links_text.pack()
+        self.addon_links_text.grid(row=0, column=0, columnspan=4, rowspan=8)
         with open('in.txt', 'r') as file:
             self.addon_links_text.insert(INSERT, file.read())
         save_button = Button(self.root, text='Save Addon List', command=self.save_addon_list)
-        save_button.pack()
+        save_button.grid(row=8, column=0, sticky=W + E)
         # TODO give GUI class its own thread using threading
         update_addons_button = Button(self.root, text='Update Addons',
                                       command=lambda: self.update_addons_wrapper(addon_updater))
-        update_addons_button.pack()
-        self.folder_path_label.pack()
+        update_addons_button.grid(row=8, column=1, sticky=W + E)
+        self.folder_path_label.grid(row=8, column=2, sticky=W + E)
         self.folder_path_label['text'] = addon_updater.WOW_ADDON_LOCATION
         folder_browse_button = Button(self.root, text='Browse')
-        folder_browse_button.pack()
+        folder_browse_button.grid(row=8, column=3, sticky=W + E)
         folder_browse_button.config(command=lambda: self.browse_folder(addon_updater))
-        self.status_bar.pack(side=BOTTOM, fill=X)
+        self.status_bar.grid(row=9, column=0, columnspan=4, sticky=W + E)
 
 
 class AddonUpdater:

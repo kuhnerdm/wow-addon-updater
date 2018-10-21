@@ -158,6 +158,8 @@ class AddonUpdater:
                 return installed_version['Installed Versions'][addon_name]
         except configparser.ParsingError:
             return 'version not found'
+        except KeyError:
+            return 0
 
     @staticmethod
     def set_installed_version(addon_page, subfolder, current_version):

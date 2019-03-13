@@ -1,4 +1,7 @@
-import zipfile, configparser
+#!/usr/bin/env python
+
+import zipfile
+import configparser
 from io import BytesIO
 from os.path import isfile, join
 from os import listdir
@@ -19,23 +22,26 @@ class AddonUpdater:
 
         # Read config file
         if not isfile('config.ini'):
-            print('Failed to read configuration file. Are you sure there is a file called "config.ini"?\n')
+            print('Failed to read configuration file. '
+                  'Are you sure there is a file called "config.ini"?\n')
             confirmExit()
 
         config = configparser.ConfigParser()
         config.read('config.ini')
 
         try:
-            self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']
-            self.ADDON_LIST_FILE = config['WOW ADDON UPDATER']['Addon List File']
-            self.INSTALLED_VERS_FILE = config['WOW ADDON UPDATER']['Installed Versions File']
-            self.AUTO_CLOSE = config['WOW ADDON UPDATER']['Close Automatically When Completed']
+            self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']          # noqa E501
+            self.ADDON_LIST_FILE = config['WOW ADDON UPDATER']['Addon List File']                # noqa E501
+            self.INSTALLED_VERS_FILE = config['WOW ADDON UPDATER']['Installed Versions File']    # noqa E501
+            self.AUTO_CLOSE = config['WOW ADDON UPDATER']['Close Automatically When Completed']  # noqa E501
         except Exception:
-            print('Failed to parse configuration file. Are you sure it is formatted correctly?\n')
+            print('Failed to parse configuration file. Are you sure it is '
+                  'formatted correctly?\n')
             confirmExit()
 
         if not isfile(self.ADDON_LIST_FILE):
-            print('Failed to read addon list file. Are you sure the file exists?\n')
+            print('Failed to read addon list file. Are you sure the file '
+                  'exists?\n')
             confirmExit()
 
         if not isfile(self.INSTALLED_VERS_FILE):
@@ -53,7 +59,10 @@ class AddonUpdater:
                 line = line.rstrip('\n')
                 if not line or line.startswith('#'):
                     continue
-                if '|' in line: # Expected input format: "mydomain.com/myzip.zip" or "mydomain.com/myzip.zip|subfolder"
+                if '|' in line:
+                    ''' Expected input format: "mydomain.com/myzip.zip"
+                        or "mydomain.com/myzip.zip|subfolder"
+                    '''
                     subfolder = line.split('|')[1]
                     line = line.split('|')[0]
                 else:
@@ -66,20 +75,30 @@ class AddonUpdater:
                 current_node.append(currentVersion)
                 installedVersion = self.getInstalledVersion(line, subfolder)
                 if not currentVersion == installedVersion:
-                    print('Installing/updating addon: ' + addonName + ' to version: ' + currentVersion + '\n')
+                    print('Installing/updating addon: {} to version: {}\n'
+                          .format(addonName, currentVersion))
                     ziploc = SiteHandler.findZiploc(line)
                     install_success = False
                     install_success = self.getAddon(ziploc, subfolder)
-                    current_node.append(self.getInstalledVersion(line, subfolder))
-                    if install_success and (currentVersion is not ''):
-                        self.setInstalledVersion(line, subfolder, currentVersion)
+                    current_node.append(
+                            self.getInstalledVersion(line, subfolder)
+                            )
+                    if install_success and (currentVersion != ''):
+                        self.setInstalledVersion(line,
+                                                 subfolder,
+                                                 currentVersion)
                 else:
-                    print(addonName + ' version ' + currentVersion + ' is up to date.\n')
+                    print('{} version {} is up to date\n'
+                          .format(addonName, currentVersion))
+
                     current_node.append("Up to date")
                 uberlist.append(current_node)
         if self.AUTO_CLOSE == 'False':
-            col_width = max(len(word) for row in uberlist for word in row) + 2  # padding
-            print("".join(word.ljust(col_width) for word in ("Name","Iversion","Cversion")))
+            ''' + 2 for padding
+            '''
+            col_width = max(len(word) for row in uberlist for word in row) + 2
+            print("".join(word.ljust(col_width)
+                  for word in ("Name", "Iversion", "Cversion")))
             for row in uberlist:
                 print("".join(word.ljust(col_width) for word in row), end='\n')
             confirmExit()
@@ -94,21 +113,27 @@ class AddonUpdater:
             self.extract(z, ziploc, subfolder)
             return True
         except Exception:
-            print('Failed to download or extract zip file for addon. Skipping...\n')
+            print('Failed to download or extract zip file for addon. '
+                  'Skipping...\n')
             return False
-    
+
     def extract(self, zip, url, subfolder):
         if subfolder == '':
             zip.extractall(self.WOW_ADDON_LOCATION)
-        else: # Pull subfolder out to main level, remove original extracted folder
+        else:
+            ''' Pull subfolder out to main level, remove original
+                extracted folder
+            '''
             try:
                 with tempfile.TemporaryDirectory() as tempDirPath:
                     zip.extractall(tempDirPath)
-                    extractedFolderPath = join(tempDirPath, listdir(tempDirPath)[0])
+                    extractedFolderPath = join(tempDirPath,
+                                               listdir(tempDirPath)[0])
                     subfolderPath = join(extractedFolderPath, subfolder)
                     destination_dir = join(self.WOW_ADDON_LOCATION, subfolder)
-                    # Delete the existing copy, as shutil.copytree will not work if
-                    # the destination directory already exists!
+                    ''' Delete the existing copy, as shutil.copytree will not
+                        work if the destination directory already exists!
+                    '''
                     shutil.rmtree(destination_dir, ignore_errors=True)
                     shutil.copytree(subfolderPath, destination_dir)
             except Exception:
@@ -120,7 +145,9 @@ class AddonUpdater:
         installedVers.read(self.INSTALLED_VERS_FILE)
         try:
             if(subfolder):
-                return installedVers['Installed Versions'][addonName + '|' + subfolder] # Keep subfolder info in installed listing
+                ''' Keep subfolder info in installed listing
+                '''
+                return installedVers['Installed Versions'][addonName + '|' + subfolder]  # noqa E501
             else:
                 return installedVers['Installed Versions'][addonName]
         except Exception:
@@ -131,7 +158,9 @@ class AddonUpdater:
         installedVers = configparser.ConfigParser()
         installedVers.read(self.INSTALLED_VERS_FILE)
         if(subfolder):
-            installedVers.set('Installed Versions', addonName + '|' + subfolder, currentVersion) # Keep subfolder info in installed listing
+            ''' Keep subfolder info in installed listing
+            '''
+            installedVers.set('Installed Versions', addonName + '|' + subfolder, currentVersion)  # noqa E501
         else:
             installedVers.set('Installed Versions', addonName, currentVersion)
         with open(self.INSTALLED_VERS_FILE, 'w') as installedVersFile:
@@ -140,15 +169,17 @@ class AddonUpdater:
 
 def main():
     if(isfile('changelog.txt')):
-        downloadedChangelog = requests.get('https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master/changelog.txt').text.split('\n')
+        wauurl = 'https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master/changelog.txt'  # noqa E501
+        downloadedChangelog = requests.get(wauurl).text.split('\n')
         with open('changelog.txt') as cl:
             presentChangelog = cl.readlines()
             for i in range(len(presentChangelog)):
                 presentChangelog[i] = presentChangelog[i].strip('\n')
 
     if(downloadedChangelog != presentChangelog):
-        print('A new update to WoWAddonUpdater is available! Check it out at https://github.com/kuhnerdm/wow-addon-updater !')
-    
+        print('A new update to WoWAddonUpdater is available! Check it out at '
+              'https://github.com/kuhnerdm/wow-addon-updater !')
+
     addonupdater = AddonUpdater()
     addonupdater.update()
     return

@@ -12,18 +12,16 @@ import packages.requests as requests
 
 
 def confirmExit():
-    input('\nPress the Enter key to exit')
+    input('Press the Enter key to exit')
     exit(0)
 
 
 class AddonUpdater:
     def __init__(self):
-        print('')
-
         # Read config file
         if not isfile('config.ini'):
             print('Failed to read configuration file. '
-                  'Are you sure there is a file called "config.ini"?\n')
+                  'Are you sure there is a file called "config.ini"?')
             confirmExit()
 
         config = configparser.ConfigParser()
@@ -36,12 +34,12 @@ class AddonUpdater:
             self.AUTO_CLOSE = config['WOW ADDON UPDATER']['Close Automatically When Completed']  # noqa E501
         except Exception:
             print('Failed to parse configuration file. Are you sure it is '
-                  'formatted correctly?\n')
+                  'formatted correctly?')
             confirmExit()
 
         if not isfile(self.ADDON_LIST_FILE):
             print('Failed to read addon list file. Are you sure the file '
-                  'exists?\n')
+                  'exists?')
             confirmExit()
 
         if not isfile(self.INSTALLED_VERS_FILE):
@@ -75,8 +73,16 @@ class AddonUpdater:
                 current_node.append(currentVersion)
                 installedVersion = self.getInstalledVersion(line, subfolder)
                 if not currentVersion == installedVersion:
-                    print('Installing/updating addon: {} to version: {}\n'
-                          .format(addonName, currentVersion))
+                    if installedVersion == 'version not found':
+                        print('Installing {} (version: {})'
+                              .format(addonName, currentVersion)
+                              )
+                    else:
+                        print('Updating {} ({} --> {})'
+                              .format(addonName,
+                                      installedVersion,
+                                      currentVersion)
+                              )
                     ziploc = SiteHandler.findZiploc(line)
                     install_success = False
                     install_success = self.getAddon(ziploc, subfolder)
@@ -88,7 +94,7 @@ class AddonUpdater:
                                                  subfolder,
                                                  currentVersion)
                 else:
-                    print('{} version {} is up to date\n'
+                    print('{} version {} is up to date'
                           .format(addonName, currentVersion))
 
                     current_node.append("Up to date")
@@ -114,7 +120,7 @@ class AddonUpdater:
             return True
         except Exception:
             print('Failed to download or extract zip file for addon. '
-                  'Skipping...\n')
+                  'Skipping...')
             return False
 
     def extract(self, zip, url, subfolder):

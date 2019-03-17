@@ -3,7 +3,7 @@
 import zipfile
 import configparser
 from io import BytesIO
-from os.path import isfile, join
+from os.path import isfile, join, dirname, realpath
 from os import listdir
 import shutil
 import tempfile
@@ -19,13 +19,14 @@ def confirmExit():
 class AddonUpdater:
     def __init__(self):
         # Read config file
-        if not isfile('config.ini'):
+        pwd = dirname(realpath(__file__))
+        if not isfile(pwd + '/config.ini'):
             print('Failed to read configuration file. '
                   'Are you sure there is a file called "config.ini"?')
             confirmExit()
 
         config = configparser.ConfigParser()
-        config.read('config.ini')
+        config.read(pwd + '/config.ini')
 
         try:
             self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']          # noqa E501
@@ -37,13 +38,14 @@ class AddonUpdater:
                   'formatted correctly?')
             confirmExit()
 
-        if not isfile(self.ADDON_LIST_FILE):
+        if not isfile(pwd + '/' + self.ADDON_LIST_FILE):
             print('Failed to read addon list file. Are you sure the file '
                   'exists?')
             confirmExit()
 
-        if not isfile(self.INSTALLED_VERS_FILE):
-            with open(self.INSTALLED_VERS_FILE, 'w') as newInstalledVersFile:
+        if not isfile(pwd + '/' + self.INSTALLED_VERS_FILE):
+            with open(pwd + '/' + self.INSTALLED_VERS_FILE, 'w') \
+                    as newInstalledVersFile:
                 newInstalledVers = configparser.ConfigParser()
                 newInstalledVers['Installed Versions'] = {}
                 newInstalledVers.write(newInstalledVersFile)
@@ -51,7 +53,8 @@ class AddonUpdater:
 
     def update(self):
         uberlist = []
-        with open(self.ADDON_LIST_FILE, "r") as fin:
+        pwd = dirname(realpath(__file__))
+        with open(pwd + '/' + self.ADDON_LIST_FILE, "r") as fin:
             for line in fin:
                 current_node = []
                 line = line.rstrip('\n')
@@ -146,9 +149,10 @@ class AddonUpdater:
                 print('Failed to get subfolder ' + subfolder)
 
     def getInstalledVersion(self, addonpage, subfolder):
+        pwd = dirname(realpath(__file__))
         addonName = SiteHandler.getAddonName(addonpage)
         installedVers = configparser.ConfigParser()
-        installedVers.read(self.INSTALLED_VERS_FILE)
+        installedVers.read(pwd + '/' + self.INSTALLED_VERS_FILE)
         try:
             if(subfolder):
                 ''' Keep subfolder info in installed listing
@@ -160,24 +164,27 @@ class AddonUpdater:
             return 'version not found'
 
     def setInstalledVersion(self, addonpage, subfolder, currentVersion):
+        pwd = dirname(realpath(__file__))
         addonName = SiteHandler.getAddonName(addonpage)
         installedVers = configparser.ConfigParser()
-        installedVers.read(self.INSTALLED_VERS_FILE)
+        installedVers.read(pwd + '/' + self.INSTALLED_VERS_FILE)
         if(subfolder):
             ''' Keep subfolder info in installed listing
             '''
             installedVers.set('Installed Versions', addonName + '|' + subfolder, currentVersion)  # noqa E501
         else:
             installedVers.set('Installed Versions', addonName, currentVersion)
-        with open(self.INSTALLED_VERS_FILE, 'w') as installedVersFile:
+        with open(pwd + '/' + self.INSTALLED_VERS_FILE, 'w') \
+                as installedVersFile:
             installedVers.write(installedVersFile)
 
 
 def main():
-    if(isfile('changelog.txt')):
+    pwd = dirname(realpath(__file__))
+    if(isfile(pwd + '/changelog.txt')):
         wauurl = 'https://raw.githubusercontent.com/kuhnerdm/wow-addon-updater/master/changelog.txt'  # noqa E501
         downloadedChangelog = requests.get(wauurl).text.split('\n')
-        with open('changelog.txt') as cl:
+        with open(dirname(realpath(__file__)) + '/changelog.txt') as cl:
             presentChangelog = cl.readlines()
             for i in range(len(presentChangelog)):
                 presentChangelog[i] = presentChangelog[i].strip('\n')

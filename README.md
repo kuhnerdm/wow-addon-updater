@@ -1,16 +1,19 @@
-# wow-addon-updater - Now supports Tukui!
+# wow-addon-updater - Supports Tukui
 
 This utility provides an alternative to the Twitch/Curse client for management and updating of addons for World of Warcraft. The Twitch/Curse client is rather bloated and buggy, and comes with many features that most users will not ever use in the first place. This utility, however, is lightweight and makes it very easy to manage which addons are being updated, and to update them just by running a python script.
 
 ## Changelog
 
+* 1/5/2019	- Updated config.ini default WoW Addon location for BFA (\World of Warcraft\_retail_\Interface\AddOns)
+			Some basic troubleshooting
+			
 * 7/20/2018 - Updated Tukui / ElvUI Site Handler, amended ElvUI instructions below
 
 * 7/19/2018 - Added colored output for update and summary
 
 * 6/30/2018 - Added license information. This shouldn't really affect anyone's use of or contributions to the project.
 
-* 6/8/2018 - Added support for Tukui repos, as well as an option to extract the subfolder of a mod folder (see changes to Input File Format section below). Thanks to https://github.com/Fezzik for assistance with this!
+* 6/8/2018	- Added support for Tukui repos, as well as an option to extract the subfolder of a mod folder (see changes to Input File Format section below). Thanks to https://github.com/Fezzik for assistance with this!
 
 * 5/20/2018 (My apologies for the wait, have finally finished classes forever) - Fixed various issues with Curse URLs and redirects, added WowAce support, better error handling. MAJOR thanks to https://github.com/zurohki for this!
 
@@ -22,9 +25,9 @@ This utility provides an alternative to the Twitch/Curse client for management a
 
 * 2/27/2018 - Fixed crash if any blank lines in the input file. Thanks to https://github.com/SeamusConnor for this!
 
-* 11/17/2017 - Fixed compatability issues with new CurseForge site. Also backwards-compatible with old URLs still left in the input file. Major thanks to https://github.com/lithium720 for letting me know about this (as I'm currently on an extended break from WoW) and https://github.com/adrien-martin for contributing to the fix.
+* 11/17/2017- Fixed compatability issues with new CurseForge site. Also backwards-compatible with old URLs still left in the input file. Major thanks to https://github.com/lithium720 for letting me know about this (as I'm currently on an extended break from WoW) and https://github.com/adrien-martin for contributing to the fix.
 
-* 7/2/2017 - Fixed bug that would cause the app to crash after downloading with no previous pip installations (i.e. the import errors)
+* 7/2/2017	- Fixed bug that would cause the app to crash after downloading with no previous pip installations (i.e. the import errors)
 
 ## First-time setup
 
@@ -32,8 +35,8 @@ This utility has two dependencies:
 
 * A version of [Python](https://www.python.org/) 3 (Any version of Python 3 should do)
 * [python-pip](https://pypi.org/project/pip/) for installing the following modules 
-* The [requests](http://docs.python-requests.org/en/master/) module
-* The [termcolor](https://pypi.org/project/termcolor/) module
+* The [requests](http://docs.python-requests.org/en/master/) module | pip install termcolor
+* The [termcolor](https://pypi.org/project/termcolor/) module | pip install colorama
 
 Thanks to https://github.com/Saritus, the requests module is now included in the download as a package, so there is no longer any need to install those yourself. Just install Python 3, download this app, configure the utility, and double click "WoWAddonUpdater.py" to start.
 
@@ -104,3 +107,17 @@ Have any questions, concerns, issues, or suggestions for the utility? Feel free 
 * ~~Add support for more addon providers (namely WoWInterface)~~ Thanks to https://github.com/Saritus for the WoWInterface support!
 
 Thanks for checking this out; hopefully it helps a lot of you :)
+
+## Troubleshooting
+Error Traceback (most recent call last):
+  File ".\WoWAddonUpdater.py", line 7, in <module>
+    import SiteHandler
+  File "c:\...\wow-addon-updater\SiteHandler.py", line 3, in <module>
+    from termcolor import colored   # termcolor and colorama for colored output text
+ModuleNotFoundError: No module named 'termcolor'
+
+termcolor module not installed for Python
+run "pip install termcolor" 
+
+If pip isn't found, then it's not in your environment variables, 
+Conforim that "C:\Python36\Scripts\" and "C:\Python36\" are in your $PATH

@@ -238,11 +238,12 @@ def tukui(addonpage):
 
 
 def getTukuiVersion(addonpage):
+    addonpage = addonpage + '/tree/master'
     try:
         response = requests.get(addonpage)
         response.raise_for_status()   # Raise an exception for HTTP errors
         content = str(response.content)
-        match = re.search(r'<div class="commit-sha-group">\\n<div class="label label-monospace">\\n(?P<hash>[^<]+?)\\n</div>', content)
+        match = re.search(r'<div class="commit-sha-group d-none d-sm-flex">\\n<div class="label label-monospace monospace">\\n(?P<hash>[^<]+?)\\n</div>', content)
         result = ''
         if match:
             result = match.group('hash')

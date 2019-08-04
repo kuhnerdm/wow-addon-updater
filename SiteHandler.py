@@ -31,7 +31,7 @@ def findZiploc(addonpage):
         return tukui(addonpage)
 
     # Wowinterface
-    elif addonpage.startswith('http://www.wowinterface.com/'):
+    elif addonpage.startswith('https://www.wowinterface.com/'):
         return wowinterface(addonpage)
 
     # Invalid page
@@ -59,7 +59,7 @@ def getCurrentVersion(addonpage):
         return getTukuiVersion(addonpage)
 
     # Wowinterface
-    elif addonpage.startswith('http://www.wowinterface.com/'):
+    elif addonpage.startswith('https://www.wowinterface.com/'):
         return getWowinterfaceVersion(addonpage)
 
     # Invalid page
@@ -71,7 +71,7 @@ def getAddonName(addonpage):
     addonName = addonpage.replace('https://mods.curse.com/addons/wow/', '')
     addonName = addonName.replace('https://www.curseforge.com/wow/addons/', '')
     addonName = addonName.replace('https://wow.curseforge.com/projects/', '')
-    addonName = addonName.replace('http://www.wowinterface.com/downloads/', '')
+    addonName = addonName.replace('https://www.wowinterface.com/downloads/', '')
     addonName = addonName.replace('https://www.wowace.com/projects/', '')
     addonName = addonName.replace('https://git.tukui.org/', '')
     if addonName.endswith('/files'):

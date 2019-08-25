@@ -88,7 +88,8 @@ def curse(addonpage):
         page = requests.get(addonpage + '/download')
         page.raise_for_status()   # Raise an exception for HTTP errors
         contentString = str(page.content)
-        indexOfZiploc = contentString.find('download__link') + 22  # Will be the index of the first char of the url
+        searchString = addonpage[26:] + '/download/'
+        indexOfZiploc = contentString.find(searchString)  # Will be the index of the first char of the url
         endQuote = contentString.find('"', indexOfZiploc)  # Will be the index of the ending quote after the url
         return 'https://www.curseforge.com' + contentString[indexOfZiploc:endQuote]
     except Exception:
@@ -145,8 +146,8 @@ def getCurseVersion(addonpage):
         page = requests.get(addonpage + '/files')
         page.raise_for_status()   # Raise an exception for HTTP errors
         contentString = str(page.content)
-        indexOfVer = contentString.find('file__name full') + 17  # first char of the version string
-        endTag = contentString.find('</span>', indexOfVer)  # ending tag after the version string
+        indexOfVer = contentString.find('text-primary-500 text-lg') + 26 # first char of the version string
+        endTag = contentString.find('</h3>', indexOfVer)  # ending tag after the version string
         return contentString[indexOfVer:endTag].strip()
     except Exception:
         print('Failed to find version number for: ' + addonpage)

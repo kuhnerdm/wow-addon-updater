@@ -93,8 +93,9 @@ class AddonUpdater:
             z = zipfile.ZipFile(BytesIO(r.content))
             self.extract(z, ziploc, subfolder)
             return True
-        except Exception:
+        except Exception as e:
             print('Failed to download or extract zip file for addon. Skipping...\n')
+            print(e + '\n')
             return False
     
     def extract(self, zip, url, subfolder):

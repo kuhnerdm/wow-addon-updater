@@ -27,6 +27,8 @@ class AddonUpdater:
 
         try:
             self.WOW_ADDON_LOCATION = config['WOW ADDON UPDATER']['WoW Addon Location']
+            self.WOW_MIN_VERSION = config['WOW ADDON UPDATER']['WoW Min Version']
+            self.WOW_MAX_VERSION = config['WOW ADDON UPDATER']['WoW Max Version']
             self.ADDON_LIST_FILE = config['WOW ADDON UPDATER']['Addon List File']
             self.INSTALLED_VERS_FILE = config['WOW ADDON UPDATER']['Installed Versions File']
             self.AUTO_CLOSE = config['WOW ADDON UPDATER']['Close Automatically When Completed']
@@ -59,7 +61,7 @@ class AddonUpdater:
                 else:
                     subfolder = ''
                 addonName = SiteHandler.getAddonName(line)
-                currentVersion = SiteHandler.getCurrentVersion(line)
+                currentVersion = SiteHandler.getCurrentVersion(line, self.WOW_MIN_VERSION, self.WOW_MAX_VERSION)
                 if currentVersion is None:
                     currentVersion = 'Not Available'
                 current_node.append(addonName)
@@ -67,7 +69,7 @@ class AddonUpdater:
                 installedVersion = self.getInstalledVersion(line, subfolder)
                 if not currentVersion == installedVersion:
                     print('Installing/updating addon: ' + addonName + ' to version: ' + currentVersion + '\n')
-                    ziploc = SiteHandler.findZiploc(line)
+                    ziploc = SiteHandler.findZiploc(line, self.WOW_MIN_VERSION, self.WOW_MAX_VERSION)
                     install_success = False
                     install_success = self.getAddon(ziploc, subfolder)
                     current_node.append(self.getInstalledVersion(line, subfolder))
